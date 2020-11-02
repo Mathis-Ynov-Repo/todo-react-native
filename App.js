@@ -6,7 +6,13 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 const STORAGE_KEY = 'TASKS'
 const App = () => {
   const [list, setList] = useState([]);
-  const [text, setText] = useState('')
+  const [text, setText] = useState('');
+  const [description, setDescription] = useState('');
+
+  const categories = {
+    "shopping": "purple",
+    "tech": "blue"
+  }
   saveData = async (tmpList) => {
     try {
       await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(tmpList))
@@ -39,7 +45,12 @@ const App = () => {
   }, [])
 
   ListItem = ({ value, index }) => {
-    let state = value.state;
+    const [display, setDisplay] = useState(false);
+    let { state, itemDescription } = value;
+    const descriptionView = <Text style={{ width: "100%" }}>{itemDescription}</Text>
+    const noDescriptionMsg = <Text style={{ width: "100%" }}>No description provided</Text>
+
+    handleDisplay = () => setDisplay(!display)
     return (
       <View>
         <TouchableOpacity style={[styles.item, state == true ? styles.success : styles.todo]}
@@ -48,13 +59,23 @@ const App = () => {
           <Text style={{ fontSize: 18, flex: 0.7 }}>
             {value.text}
           </Text>
+
           <TouchableOpacity
             style={styles.button}
             onPress={() => deleteItem(value)}
           >
             <Text style={{ color: 'red', margin: 5 }}>Delete</Text>
           </TouchableOpacity>
+          <TouchableOpacity
+            style={styles}
+            onPress={handleDisplay}
+          >
+            <Text style={{ color: 'grey', margin: 5 }}>V</Text>
+          </TouchableOpacity>
+          {/* if displayBtn is pressed, then, show either the item description or the no description message. Else dont do anything */}
+          {display ? (itemDescription ? descriptionView : noDescriptionMsg) : null}
         </TouchableOpacity>
+
 
       </View>
     );
@@ -65,6 +86,8 @@ const App = () => {
       <Text style={{ fontWeight: 'bold', fontSize: 20, marginTop: 10, marginLeft: 15 }}>My TodoList</Text>
     </View>
   );
+
+  //TODO TaskDetails + Edit option + Date d'échéance ? + catégories (shopping, tech...)
 
   deleteItem = (item) => {
     // could have use splice aswell
@@ -92,11 +115,13 @@ const App = () => {
 
     if (text != '') {
       //ES6
-      let tmp = [...list, { text: text, state: false }]
+      let tmp = [...list, { text: text, state: false, itemDescription: description }]
       saveData(tmp);
       setList(tmp)
       setText('')
+      setDescription('')
       textInput.clear()
+      descriptionInput.clear()
     }
   };
 
@@ -133,6 +158,13 @@ const App = () => {
             onChangeText={text => setText(text)}
             ref={input => { textInput = input }}
           />
+          <TextInput
+            style={styles.input}
+            placeholder="A little description maybe?"
+            maxLength={200}
+            onChangeText={description => setDescription(description)}
+            ref={input => { descriptionInput = input }}
+          />
           <Button
             style={styles.button}
             title="Add"
@@ -162,6 +194,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     flexDirection: 'row',
     justifyContent: 'space-evenly',
+    flexWrap: "wrap",
     alignItems: "center"
   },
   success: {
@@ -174,6 +207,7 @@ const styles = StyleSheet.create({
     borderColor: 'red',
     borderWidth: 1
   },
+
   buttonSuccess: {
     borderColor: 'green',
     borderWidth: 1
