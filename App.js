@@ -1,6 +1,7 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { Component, useEffect, useState } from 'react';
 import { StyleSheet, Text, View, ScrollView, TouchableOpacity, TextInput, SafeAreaView, Button, Image } from 'react-native';
+import Notification from "./notification";
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
 const STORAGE_KEY = 'TASKS'
@@ -8,6 +9,8 @@ const App = () => {
   const [list, setList] = useState([]);
   const [text, setText] = useState('');
   const [description, setDescription] = useState('');
+  const [displayNotification, setDisplayNotification] = useState(false);
+
 
   const categories = {
     "shopping": "purple",
@@ -87,7 +90,8 @@ const App = () => {
     </View>
   );
 
-  //TODO TaskDetails + Edit option + Date d'échéance ? + catégories (shopping, tech...)
+  //TODO  Edit option + Date d'échéance ? (color changes if within day / week / month)+ catégories (shopping, tech...)
+  // Edit state + maybe opacity change and update method + error notif
 
   deleteItem = (item) => {
     // could have use splice aswell
@@ -122,6 +126,9 @@ const App = () => {
       setDescription('')
       textInput.clear()
       descriptionInput.clear()
+    } else if (displayNotification == false) {
+      setDisplayNotification(true);
+      setTimeout(() => setDisplayNotification(false), 3000);
     }
   };
 
@@ -129,6 +136,7 @@ const App = () => {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#efefef' }}>
       <NavBar />
+      {displayNotification ? <Notification></Notification> : null}
       {list.length > 0 ? (
         <ScrollView>
           {list.map((value, index) => {
