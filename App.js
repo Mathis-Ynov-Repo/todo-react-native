@@ -3,19 +3,35 @@ import React, { Component, useEffect, useState } from 'react';
 import { StyleSheet, Text, View, ScrollView, TouchableOpacity, TextInput, SafeAreaView, Button, Image } from 'react-native';
 import Notification from "./notification";
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import DateTimePickerModal from "react-native-modal-datetime-picker";
 
 const STORAGE_KEY = 'TASKS'
 const App = () => {
   const [list, setList] = useState([]);
   const [text, setText] = useState('');
+  const [date, setDate] = useState(new Date())
   const [description, setDescription] = useState('');
   const [displayNotification, setDisplayNotification] = useState(false);
+  const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
 
 
   const categories = {
     "shopping": "purple",
     "tech": "blue"
   }
+  const showDatePicker = () => {
+    setDatePickerVisibility(true);
+  };
+
+  const hideDatePicker = () => {
+    setDatePickerVisibility(false);
+  };
+
+  const handleConfirm = (date) => {
+    //console.warn("A date has been picked: ", date);
+    setDate(date);
+    hideDatePicker();
+  };
   saveData = async (tmpList) => {
     try {
       await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(tmpList))
@@ -44,14 +60,34 @@ const App = () => {
     }
   }
   useEffect(() => {
+    // clearStorage(),
     readData()
   }, [])
 
   ListItem = ({ value, index }) => {
     const [display, setDisplay] = useState(false);
-    let { state, itemDescription } = value;
+    let { state, itemDescription, text, dueDateString } = value;
+
+    let dueDate = new Date(dueDateString)
+    let todoMonth = dueDate.getMonth();
+    let todoDay = dueDate.getDate();
+    let todoYear = dueDate.getFullYear()
+    const displayedDate = todoDay + '/' + (todoMonth + 1) + '/' + todoYear
     const descriptionView = <Text style={{ width: "100%" }}>{itemDescription}</Text>
     const noDescriptionMsg = <Text style={{ width: "100%" }}>No description provided</Text>
+
+    getDateStyle = () => {
+      let currDate = new Date();
+      let currMonth = currDate.getMonth();
+      let currYear = currDate.getFullYear();
+      if (currMonth > todoMonth && currYear >= todoYear) {
+        return { color: 'red' }
+      } else if (currMonth == todoMonth && currYear == todoYear) {
+        return { color: 'orange' }
+      } else {
+        return { color: 'green' }
+      }
+    }
 
     handleDisplay = () => setDisplay(!display)
     return (
@@ -60,7 +96,10 @@ const App = () => {
           onPress={() => changeState(index)}
         >
           <Text style={{ fontSize: 18, flex: 0.7 }}>
-            {value.text}
+            {text}
+          </Text>
+          <Text style={styles.date, getDateStyle()}>
+            {displayedDate}
           </Text>
 
           <TouchableOpacity
@@ -119,11 +158,12 @@ const App = () => {
 
     if (text != '') {
       //ES6
-      let tmp = [...list, { text: text, state: false, itemDescription: description }]
+      let tmp = [...list, { text: text, state: false, itemDescription: description, dueDateString: date }]
       saveData(tmp);
       setList(tmp)
       setText('')
       setDescription('')
+      setDate(new Date())
       textInput.clear()
       descriptionInput.clear()
     } else if (displayNotification == false) {
@@ -172,6 +212,13 @@ const App = () => {
             maxLength={200}
             onChangeText={description => setDescription(description)}
             ref={input => { descriptionInput = input }}
+          />
+          <Button title="Show Date Picker" onPress={showDatePicker} />
+          <DateTimePickerModal
+            isVisible={isDatePickerVisible}
+            mode="date"
+            onConfirm={handleConfirm}
+            onCancel={hideDatePicker}
           />
           <Button
             style={styles.button}
@@ -224,5 +271,9 @@ const styles = StyleSheet.create({
     fontSize: 24,
     textAlign: "center"
   },
+  date: {
+    fontSize: 14,
+    flex: 0.3
+  }
 });
 export default App;
