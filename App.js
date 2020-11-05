@@ -71,28 +71,22 @@ const App = () => {
     const [isDatePickerVisibleItem, setDatePickerVisibilityItem] = useState(false);
 
     //destructuring value prop
-    let { state, itemDescription, text, dueDateString } = value;
+    let { state, description, text, dueDateString } = value;
+
+    //declare states with those values
     const [dueDate, setDueDate] = useState(new Date(dueDateString))
-    //next
-    // const [itemText, setItemText] = useState(new Date(dueDateString))
-    // const [dueDate, setDueDate] = useState(new Date(dueDateString))
-    // let dueDate = new Date(dueDateString)
+    const [itemText, setItemText] = useState(text)
+    const [itemDescription, setItemDescription] = useState(description)
+
     let todoMonth = dueDate.getMonth();
     let todoDay = dueDate.getDate();
     let todoYear = dueDate.getFullYear()
     let displayedDate = todoDay + '/' + (todoMonth + 1) + '/' + todoYear;
-    let description = itemDescription ? itemDescription : "No description provided"
+    let displayedDescription = description ? description : "No description provided"
     //old
     // const descriptionView = <Text style={{ width: "100%" }}>{itemDescription}</Text>
     // const noDescriptionMsg = <Text style={{ width: "100%" }}>No description provided</Text>
-    const handleDate = (date) => {
-      dueDateString = date;
-      let dueDate = new Date(dueDateString)
-      let todoMonth = dueDate.getMonth();
-      let todoDay = dueDate.getDate();
-      let todoYear = dueDate.getFullYear()
-      displayedDate = todoDay + '/' + (todoMonth + 1) + '/' + todoYear;
-    }
+
     const showDatePickerItem = () => {
       setDatePickerVisibilityItem(true);
     };
@@ -123,7 +117,6 @@ const App = () => {
     handleDisplay = () => setDisplay(!display)
 
     const confirmEdit = (item, index) => {
-      // console.log(item)
       let tmp = list.map((v, i) => i != index ? v : item);
       saveData(tmp);
       setIsEditing(false);
@@ -147,7 +140,7 @@ const App = () => {
               style={styles.button}
               onPress={() => deleteItem(value)}
             >
-              <Text style={{ color: 'red', margin: 5 }}>Delete</Text>
+              <Text style={{ color: 'red', margin: 5 }}>🗑️</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.button}
@@ -159,11 +152,11 @@ const App = () => {
               style={styles}
               onPress={handleDisplay}
             >
-              <Text style={{ color: 'grey', margin: 5 }}>V</Text>
+              <Text style={{ color: 'grey', margin: 5 }}>{display ? '⬆️' : '⬇️'}</Text>
             </TouchableOpacity>
             {/* if displayBtn is pressed, then, show either the item description or the no description message. Else dont do anything */}
             {/* {display ? (itemDescription ? descriptionView : noDescriptionMsg) : null} */}
-            {display ? <Text style={{ width: "100%" }}>{description}</Text> : null}
+            {display ? <Text style={{ width: "100%" }}>{displayedDescription}</Text> : null}
           </TouchableOpacity>
         ) : (
             <View style={[styles.item, styles.edit]}>
@@ -174,7 +167,7 @@ const App = () => {
                 style={{ fontSize: 18, flex: 0.7 }}
                 placeholder={text}
                 maxLength={40}
-                onChangeText={newtext => text = newtext}
+                onChangeText={newtext => setItemText(newtext)}
               />
               <Text style={styles.date, getDateStyle()}>
                 {displayedDate}
@@ -196,15 +189,15 @@ const App = () => {
               <TouchableOpacity
                 style={styles.buttonSuccess}
                 //inject destructured props into a new object
-                onPress={() => confirmEdit({ state, itemDescription, text, dueDateString: dueDate }, index)}
+                onPress={() => confirmEdit({ state, description: itemDescription, text: itemText, dueDateString: dueDate }, index)}
               >
                 <Text style={{ color: 'green', margin: 5 }}>✔️</Text>
               </TouchableOpacity>
               <TextInput
                 style={{ width: "100%" }}
-                placeholder={description}
+                placeholder={displayedDescription}
                 maxLength={200}
-                onChangeText={newDescription => itemDescription = newDescription}
+                onChangeText={newDescription => setItemDescription(newDescription)}
               />
               {/* <TouchableOpacity
                 style={styles}
@@ -260,7 +253,7 @@ const App = () => {
 
     if (text != '') {
       //ES6
-      let tmp = [...list, { text: text, state: false, itemDescription: description, dueDateString: date }]
+      let tmp = [...list, { text: text, state: false, description: description, dueDateString: date }]
       saveData(tmp);
       setList(tmp)
       setText('')
