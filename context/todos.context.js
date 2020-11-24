@@ -19,9 +19,7 @@ const reducer = (todos, action) => {
             saveData(tmpDelTodos);
             return tmpDelTodos;
         case "MOD_TODO":
-            console.log(action.payload)
             let tmpModTodos = todos.map((todo, index) => index !== action.payload.index ? todo : action.payload.item);
-            console.log(tmpModTodos)
             return tmpModTodos
         case "MOD_TODO_STATE":
             let tmpModeStateTodos = todos.map((value, i) => {

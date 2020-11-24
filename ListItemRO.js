@@ -1,17 +1,18 @@
-import React, { Component, useState } from 'react';
+import React, { Component, useContext, useState } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, TextInput, Button } from 'react-native';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
+import { TodoContext } from './context/todos.context';
 
-const ListItemRO = ({ value, index }) => {
+const ListItemRO = ({ value }) => {
     const [display, setDisplay] = useState(false);
+    // Is it better that way or using props 🤔 ?
+    const [todos, dispatch] = useContext(TodoContext);
 
     //destructuring value prop
     let { state, description, text, dueDateString } = value;
 
     //declare states with those values
     const dueDate = new Date(dueDateString);
-    const [itemText, setItemText] = useState(text)
-    const [itemDescription, setItemDescription] = useState(description)
 
     let todoMonth = dueDate.getMonth();
     let todoDay = dueDate.getDate();
@@ -37,6 +38,11 @@ const ListItemRO = ({ value, index }) => {
 
     handleDisplay = () => setDisplay(!display)
 
+    const handleDelete = () => dispatch({
+        type: "DEL_TODO",
+        payload: value
+    })
+
     return (
 
         <View>
@@ -47,13 +53,13 @@ const ListItemRO = ({ value, index }) => {
                 <Text style={styles.date, getDateStyle()}>
                     {displayedDate}
                 </Text>
-                {/* 
-                    <TouchableOpacity
-                        style={styles.button}
-                        onPress={() => handleDelete(value)}
-                    > */}
-                <Text style={{ color: 'red', margin: 5 }}>🗑️</Text>
-                {/* </TouchableOpacity> */}
+
+                <TouchableOpacity
+                    style={styles.button}
+                    onPress={() => handleDelete(value)}
+                >
+                    <Text style={{ color: 'red', margin: 5 }}>🗑️</Text>
+                </TouchableOpacity>
                 <TouchableOpacity
                     style={styles}
                     onPress={handleDisplay}

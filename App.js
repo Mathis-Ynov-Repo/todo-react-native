@@ -279,36 +279,7 @@ const App = () => {
     const [description, setDescription] = useState('');
     const [displayNotification, setDisplayNotification] = useState(false);
     const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
-    saveData = async (tmpList) => {
-      try {
-        await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(tmpList))
-        // alert('Data successfully saved')
-      } catch (e) {
-        console.log(e)
-        alert('Failed to save the data to the storage')
-      }
-    }
-    readData = async () => {
-      try {
-        const list = await AsyncStorage.getItem(STORAGE_KEY)
-        if (list !== null) {
-          setList(JSON.parse(list))
-        }
-      } catch (e) {
-        alert('Failed to fetch the data from storage')
-      }
-    }
-    const clearStorage = async () => {
-      try {
-        await AsyncStorage.clear()
-        alert('Storage successfully cleared!')
-      } catch (e) {
-        alert('Failed to clear the async storage.')
-      }
-    }
-    // useEffect(() => {
-    //   readData()
-    // }, [])
+
     const addItem = () => {
 
       if (text != '') {
