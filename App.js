@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import React, { Component, useEffect, useState } from 'react';
+import React, { Component, useContext, useEffect, useState } from 'react';
 import { StyleSheet, Text, View, ScrollView, TextInput, SafeAreaView, Button, Image } from 'react-native';
 import Notification from "./notification";
 import AsyncStorage from '@react-native-async-storage/async-storage'
@@ -10,28 +10,37 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import NavBar from "./Navbar"
+import { TodoProvider } from './context/todos.context';
+import { TodoContext } from './context/todos.context';
 
 const STORAGE_KEY = 'TASKS'
 const App = () => {
   //TODO create list state and give as prop to screens ?
+  // const [list, setList] = useState([]);
+  // const [todos, dispatch] = useContext(TodoContext);
+  // readData = async () => {
+  //   try {
+  //     const list = await AsyncStorage.getItem(STORAGE_KEY)
+  //     if (list !== null) {
+  //       let arrayOfTasks = JSON.parse(list);
+  //       dispatch({
+  //         type: 'SET_TODOS',
+  //         payload: arrayOfTasks
+  //       })
+  //       console.log(arrayOfDoneTasks)
+  //       // setList(arrayOfDoneTasks)
+  //     }
+  //   } catch (e) {
+  //     alert('Failed to fetch the data from storage')
+  //   }
+  // }
+  // useEffect(() => {
+  //   readData(), console.log("updated")
+  // }, [list])
   function DoneTasksScreen() {
-    const [list, setList] = useState([]);
-    readData = async () => {
-      try {
-        const list = await AsyncStorage.getItem(STORAGE_KEY)
-        if (list !== null) {
-          let arrayOfTasks = JSON.parse(list);
-          let arrayOfDoneTasks = arrayOfTasks.filter((v) => v.state === true)
-          console.log(arrayOfDoneTasks)
-          setList(arrayOfDoneTasks)
-        }
-      } catch (e) {
-        alert('Failed to fetch the data from storage')
-      }
-    }
-    useEffect(() => {
-      readData()
-    }, [list])
+    const [todos, dispatch] = useContext(TodoContext);
+
+    const list = todos.filter((v) => v.state === true)
     return (
       <SafeAreaView style={{ flex: 1, backgroundColor: '#efefef' }}>
         <NavBar title="Done Tasks" />
@@ -61,9 +70,9 @@ const App = () => {
     );
   }
   function MainScreen() {
+    const [todos, dispatch] = useContext(TodoContext);
 
-
-    const [list, setList] = useState([]);
+    // const [list, setList] = useState([]);
     const [text, setText] = useState('');
     const [date, setDate] = useState(new Date());
     const [description, setDescription] = useState('');
@@ -91,37 +100,37 @@ const App = () => {
       setDate(date);
       hideDatePicker();
     };
-    saveData = async (tmpList) => {
-      try {
-        await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(tmpList))
-        // alert('Data successfully saved')
-      } catch (e) {
-        console.log(e)
-        alert('Failed to save the data to the storage')
-      }
-    }
-    readData = async () => {
-      try {
-        const list = await AsyncStorage.getItem(STORAGE_KEY)
-        if (list !== null) {
-          setList(JSON.parse(list))
-        }
-      } catch (e) {
-        alert('Failed to fetch the data from storage')
-      }
-    }
-    const clearStorage = async () => {
-      try {
-        await AsyncStorage.clear()
-        alert('Storage successfully cleared!')
-      } catch (e) {
-        alert('Failed to clear the async storage.')
-      }
-    }
-    useEffect(() => {
-      // clearStorage(),
-      readData()
-    }, [])
+    // saveData = async (tmpList) => {
+    //   try {
+    //     await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(tmpList))
+    //     // alert('Data successfully saved')
+    //   } catch (e) {
+    //     console.log(e)
+    //     alert('Failed to save the data to the storage')
+    //   }
+    // }
+    // readData = async () => {
+    //   try {
+    //     const list = await AsyncStorage.getItem(STORAGE_KEY)
+    //     if (list !== null) {
+    //       setList(JSON.parse(list))
+    //     }
+    //   } catch (e) {
+    //     alert('Failed to fetch the data from storage')
+    //   }
+    // }
+    // const clearStorage = async () => {
+    //   try {
+    //     await AsyncStorage.clear()
+    //     alert('Storage successfully cleared!')
+    //   } catch (e) {
+    //     alert('Failed to clear the async storage.')
+    //   }
+    // }
+    // useEffect(() => {
+    //   // clearStorage(),
+    //   readData()
+    // }, [])
 
 
     //TODO  Edit option + Date d'échéance ? (color changes if within day / week / month)+ catégories (shopping, tech...)
@@ -129,38 +138,70 @@ const App = () => {
 
     const deleteItem = (item) => {
       // could have use splice aswell
-      let tmp = list.filter((val) => val != item)
-      saveData(tmp);
-      setList(tmp);
+
+      //OLD V1
+      // let tmp = list.filter((val) => val != item)
+
+      dispatch({
+        type: "DEL_TODO",
+        payload: item
+      });
+      // OLD V1
+      // saveData(tmp);
+      // setList(tmp);
     };
     const changeState = (index) => {
-      let tmp = list.map((value, i) => {
-        if (index != i) {
-          return value
-        } else {
-          value.state = !value.state;
-          return value
-        }
-      })
-      saveData(tmp);
-      setList(tmp);
+      dispatch({
+        type: "MOD_TODO_STATE",
+        payload: index
+      });
+      // let tmp = list.map((value, i) => {
+      //   if (index != i) {
+      //     return value
+      //   } else {
+      //     value.state = !value.state;
+      //     return value
+      //   }
+      // })
+      // saveData(tmp);
+      // setList(tmp);
 
     }
     const editItem = (item, index) => {
-      let tmp = list.map((v, i) => i != index ? v : item);
-      saveData(tmp);
+      // let tmp = list.map((v, i) => i != index ? v : item);
+      // saveData(tmp);
+      dispatch({
+        type: "MOD_TODO",
+        payload: { item, index }
+      })
       // setIsEditing(false);
-      setList(tmp);
+      // setList(tmp);
     }
     const addItem = () => {
+      //OLD V1
+
       //ES5
       // list.push(this.state.text)
 
+      // if (text != '') {
+      //   //ES6
+      //   let tmp = [...list, { text: text, state: false, description: description, dueDateString: date }]
+      //   saveData(tmp);
+      //   setList(tmp)
+      //   setText('')
+      //   setDescription('')
+      //   setDate(new Date())
+      //   textInput.clear()
+      //   descriptionInput.clear()
+      // } else if (displayNotification == false) {
+      //   setDisplayNotification(true);
+      //   setTimeout(() => setDisplayNotification(false), 3000);
+      // }
       if (text != '') {
-        //ES6
-        let tmp = [...list, { text: text, state: false, description: description, dueDateString: date }]
-        saveData(tmp);
-        setList(tmp)
+        dispatch({
+          type: "ADD_TODO",
+          payload: { text: text, state: false, description: description, dueDateString: date }
+        });
         setText('')
         setDescription('')
         setDate(new Date())
@@ -176,9 +217,9 @@ const App = () => {
         <NavBar title="Your List" />
         {displayNotification ? <Notification></Notification> : null}
 
-        {list.length > 0 ? (
+        {todos.length > 0 ? (
           <ScrollView>
-            {list.map((value, index) => {
+            {todos.map((value, index) => {
               return <ListItem value={value} index={index} handleEdit={editItem} handleStateChange={changeState} handleDelete={deleteItem} key={index} />
             })
 
@@ -265,9 +306,9 @@ const App = () => {
         alert('Failed to clear the async storage.')
       }
     }
-    useEffect(() => {
-      readData()
-    }, [])
+    // useEffect(() => {
+    //   readData()
+    // }, [])
     const addItem = () => {
 
       if (text != '') {
@@ -293,35 +334,37 @@ const App = () => {
   }
   const Tab = createBottomTabNavigator();
   return (
-    <NavigationContainer>
-      <Tab.Navigator
-        screenOptions={({ route }) => ({
-          tabBarIcon: ({ focused, color, size }) => {
-            let iconName;
+    <TodoProvider>
+      <NavigationContainer>
+        <Tab.Navigator
+          screenOptions={({ route }) => ({
+            tabBarIcon: ({ focused, color, size }) => {
+              let iconName;
 
-            if (route.name === 'Main') {
-              iconName = focused
-                ? 'ios-information-circle'
-                : 'ios-information-circle-outline';
-            } else if (route.name === 'CreateTask') {
-              iconName = focused ? 'ios-list-box' : 'ios-list';
-            }
+              if (route.name === 'Main') {
+                iconName = focused
+                  ? 'ios-information-circle'
+                  : 'ios-information-circle-outline';
+              } else if (route.name === 'CreateTask') {
+                iconName = focused ? 'ios-list-box' : 'ios-list';
+              }
 
-            // You can return any component that you like here!
-            return <Ionicons name={iconName} size={size} color={color} />;
-          },
-        })}
-        tabBarOptions={{
-          activeTintColor: 'tomato',
-          inactiveTintColor: 'gray',
-        }}
-      >
-        <Tab.Screen name="Main" component={MainScreen} />
-        <Tab.Screen name="CreateTask" component={CreateTaskScreen} />
-        <Tab.Screen name="DoneTasks" component={DoneTasksScreen} />
+              // You can return any component that you like here!
+              return <Ionicons name={iconName} size={size} color={color} />;
+            },
+          })}
+          tabBarOptions={{
+            activeTintColor: 'tomato',
+            inactiveTintColor: 'gray',
+          }}
+        >
+          <Tab.Screen name="Main" component={MainScreen} />
+          <Tab.Screen name="CreateTask" component={CreateTaskScreen} />
+          <Tab.Screen name="DoneTasks" component={DoneTasksScreen} />
 
-      </Tab.Navigator>
-    </NavigationContainer>
+        </Tab.Navigator>
+      </NavigationContainer>
+    </TodoProvider>
   );
 }
 
