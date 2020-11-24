@@ -5,12 +5,61 @@ import Notification from "./notification";
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import ListItem from "./ListItem";
+import ListItemRO from "./ListItemRO";
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import NavBar from "./Navbar"
 
 const STORAGE_KEY = 'TASKS'
 const App = () => {
+  //TODO create list state and give as prop to screens ?
+  function DoneTasksScreen() {
+    const [list, setList] = useState([]);
+    readData = async () => {
+      try {
+        const list = await AsyncStorage.getItem(STORAGE_KEY)
+        if (list !== null) {
+          let arrayOfTasks = JSON.parse(list);
+          let arrayOfDoneTasks = arrayOfTasks.filter((v) => v.state === true)
+          console.log(arrayOfDoneTasks)
+          setList(arrayOfDoneTasks)
+        }
+      } catch (e) {
+        alert('Failed to fetch the data from storage')
+      }
+    }
+    useEffect(() => {
+      readData()
+    }, [list])
+    return (
+      <SafeAreaView style={{ flex: 1, backgroundColor: '#efefef' }}>
+        <NavBar title="Done Tasks" />
+
+        {list.length > 0 ? (
+          <ScrollView>
+            {list.map((value, index) => {
+              return <ListItemRO value={value} key={index}></ListItemRO>
+            })
+
+            }
+
+          </ScrollView>
+        ) : (
+            <ScrollView contentContainerStyle={{ alignItems: "center", justifyContent: "center", flexGrow: 1 }}>
+
+              <Text style={{ fontSize: 24 }}>No items in the list yet !</Text>
+              <Image
+                source={{ uri: 'https://reactnative.dev/img/tiny_logo.png' }}
+              />
+
+            </ScrollView>
+
+          )}
+
+      </SafeAreaView>
+    );
+  }
   function MainScreen() {
 
 
@@ -75,12 +124,6 @@ const App = () => {
     }, [])
 
 
-    NavBar = () => (
-      <View style={{ height: 60, backgroundColor: 'white', justifyContent: 'center', alignItems: 'center', marginBottom: 5 }}>
-        <Text style={{ fontWeight: 'bold', fontSize: 20, marginTop: 10, marginLeft: 15 }}>My TodoList</Text>
-      </View>
-    );
-
     //TODO  Edit option + Date d'échéance ? (color changes if within day / week / month)+ catégories (shopping, tech...)
     // Edit state + maybe opacity change and update method + error notif
 
@@ -130,7 +173,7 @@ const App = () => {
     };
     return (
       <SafeAreaView style={{ flex: 1, backgroundColor: '#efefef' }}>
-        <NavBar />
+        <NavBar title="Your List" />
         {displayNotification ? <Notification></Notification> : null}
 
         {list.length > 0 ? (
@@ -188,10 +231,63 @@ const App = () => {
       </SafeAreaView>
     );
   }
-  function SettingsScreen() {
+  function CreateTaskScreen() {
+    const [list, setList] = useState([]);
+    const [text, setText] = useState('');
+    const [date, setDate] = useState(new Date());
+    const [description, setDescription] = useState('');
+    const [displayNotification, setDisplayNotification] = useState(false);
+    const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
+    saveData = async (tmpList) => {
+      try {
+        await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(tmpList))
+        // alert('Data successfully saved')
+      } catch (e) {
+        console.log(e)
+        alert('Failed to save the data to the storage')
+      }
+    }
+    readData = async () => {
+      try {
+        const list = await AsyncStorage.getItem(STORAGE_KEY)
+        if (list !== null) {
+          setList(JSON.parse(list))
+        }
+      } catch (e) {
+        alert('Failed to fetch the data from storage')
+      }
+    }
+    const clearStorage = async () => {
+      try {
+        await AsyncStorage.clear()
+        alert('Storage successfully cleared!')
+      } catch (e) {
+        alert('Failed to clear the async storage.')
+      }
+    }
+    useEffect(() => {
+      readData()
+    }, [])
+    const addItem = () => {
+
+      if (text != '') {
+        //ES6
+        let tmp = [...list, { text: text, state: false, description: description, dueDateString: date }]
+        saveData(tmp);
+        setList(tmp)
+        setText('')
+        setDescription('')
+        setDate(new Date())
+        textInput.clear()
+        descriptionInput.clear()
+      } else if (displayNotification == false) {
+        setDisplayNotification(true);
+        setTimeout(() => setDisplayNotification(false), 3000);
+      }
+    };
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <Text>Settings!</Text>
+        <Text>Create Task!</Text>
       </View>
     );
   }
@@ -207,7 +303,7 @@ const App = () => {
               iconName = focused
                 ? 'ios-information-circle'
                 : 'ios-information-circle-outline';
-            } else if (route.name === 'Settings') {
+            } else if (route.name === 'CreateTask') {
               iconName = focused ? 'ios-list-box' : 'ios-list';
             }
 
@@ -221,7 +317,9 @@ const App = () => {
         }}
       >
         <Tab.Screen name="Main" component={MainScreen} />
-        <Tab.Screen name="Settings" component={SettingsScreen} />
+        <Tab.Screen name="CreateTask" component={CreateTaskScreen} />
+        <Tab.Screen name="DoneTasks" component={DoneTasksScreen} />
+
       </Tab.Navigator>
     </NavigationContainer>
   );
