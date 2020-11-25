@@ -1,10 +1,12 @@
-import React, { Component, useState } from 'react';
+import React, { Component, useContext, useState } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, TextInput, Button } from 'react-native';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
+import { TodoContext } from '../context/todos.context';
 
-const ListItem = ({ value, index, handleEdit, handleStateChange, handleDelete }) => {
+const ListItemV2 = ({ value, index, editable }) => {
     const [display, setDisplay] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
+    const [todos, dispatch] = useContext(TodoContext);
     const [isDatePickerVisibleItem, setDatePickerVisibilityItem] = useState(false);
 
 
@@ -21,6 +23,9 @@ const ListItem = ({ value, index, handleEdit, handleStateChange, handleDelete })
     let todoYear = dueDate.getFullYear()
     let displayedDate = todoDay + '/' + (todoMonth + 1) + '/' + todoYear;
     let displayedDescription = description ? description : "No description provided"
+    //old
+    // const descriptionView = <Text style={{ width: "100%" }}>{itemDescription}</Text>
+    // const noDescriptionMsg = <Text style={{ width: "100%" }}>No description provided</Text>
 
     const showDatePickerItem = () => {
         setDatePickerVisibilityItem(true);
@@ -54,6 +59,26 @@ const ListItem = ({ value, index, handleEdit, handleStateChange, handleDelete })
     const confirmEdit = (item, index) => {
         handleEdit(item, index);
         setIsEditing(false);
+    }
+    const handleDelete = (item) => {
+        dispatch({
+            type: 'DEL_TODO',
+            payload: item
+        })
+    }
+
+    const handleEdit = (item, index) => {
+        dispatch({
+            type: 'MOD_TODO',
+            payload: { item, index }
+        })
+    }
+
+    const handleStateChange = () => {
+        dispatch({
+            type: 'MOD_TODO_STATE',
+            payload: index
+        })
     }
 
     return (
@@ -196,4 +221,4 @@ const styles = StyleSheet.create({
         flex: 0.3
     }
 });
-export default ListItem
+export default ListItemV2

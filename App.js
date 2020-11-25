@@ -1,8 +1,7 @@
 import { StatusBar } from 'expo-status-bar';
-import React, { Component, useContext, useEffect, useState } from 'react';
-import { StyleSheet, Text, View, ScrollView, TextInput, SafeAreaView, Button, Image } from 'react-native';
+import React, { Component, useContext, useState } from 'react';
+import { StyleSheet, Text, View, ScrollView, TextInput, SafeAreaView, Button } from 'react-native';
 import Notification from "./notification";
-import AsyncStorage from '@react-native-async-storage/async-storage'
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import ListItem from "./ListItem";
 import ListItemRO from "./ListItemRO";
@@ -13,30 +12,8 @@ import NavBar from "./Navbar"
 import { TodoProvider } from './context/todos.context';
 import { TodoContext } from './context/todos.context';
 
-const STORAGE_KEY = 'TASKS'
 const App = () => {
-  //TODO create list state and give as prop to screens ?
-  // const [list, setList] = useState([]);
-  // const [todos, dispatch] = useContext(TodoContext);
-  // readData = async () => {
-  //   try {
-  //     const list = await AsyncStorage.getItem(STORAGE_KEY)
-  //     if (list !== null) {
-  //       let arrayOfTasks = JSON.parse(list);
-  //       dispatch({
-  //         type: 'SET_TODOS',
-  //         payload: arrayOfTasks
-  //       })
-  //       console.log(arrayOfDoneTasks)
-  //       // setList(arrayOfDoneTasks)
-  //     }
-  //   } catch (e) {
-  //     alert('Failed to fetch the data from storage')
-  //   }
-  // }
-  // useEffect(() => {
-  //   readData(), console.log("updated")
-  // }, [list])
+
   function DoneTasksScreen() {
     const [todos, dispatch] = useContext(TodoContext);
 
@@ -58,9 +35,6 @@ const App = () => {
             <ScrollView contentContainerStyle={{ alignItems: "center", justifyContent: "center", flexGrow: 1 }}>
 
               <Text style={{ fontSize: 24 }}>No items in the list yet !</Text>
-              <Image
-                source={{ uri: 'https://reactnative.dev/img/tiny_logo.png' }}
-              />
 
             </ScrollView>
 
@@ -72,7 +46,6 @@ const App = () => {
   function MainScreen() {
     const [todos, dispatch] = useContext(TodoContext);
 
-    // const [list, setList] = useState([]);
     const [text, setText] = useState('');
     const [date, setDate] = useState(new Date());
     const [description, setDescription] = useState('');
@@ -96,10 +69,10 @@ const App = () => {
     };
 
     const handleConfirm = (date) => {
-      //console.warn("A date has been picked: ", date);
       setDate(date);
       hideDatePicker();
     };
+
     // saveData = async (tmpList) => {
     //   try {
     //     await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(tmpList))
@@ -131,10 +104,6 @@ const App = () => {
     //   // clearStorage(),
     //   readData()
     // }, [])
-
-
-    //TODO  Edit option + Date d'échéance ? (color changes if within day / week / month)+ catégories (shopping, tech...)
-    // Edit state + maybe opacity change and update method + error notif
 
     const deleteItem = (item) => {
       // could have use splice aswell
@@ -212,6 +181,7 @@ const App = () => {
         setTimeout(() => setDisplayNotification(false), 3000);
       }
     };
+
     return (
       <SafeAreaView style={{ flex: 1, backgroundColor: '#efefef' }}>
         <NavBar title="Your List" />
@@ -230,9 +200,6 @@ const App = () => {
             <ScrollView contentContainerStyle={{ alignItems: "center", justifyContent: "center", flexGrow: 1 }}>
 
               <Text style={{ fontSize: 24 }}>No items in the list yet !</Text>
-              <Image
-                source={{ uri: 'https://reactnative.dev/img/tiny_logo.png' }}
-              />
 
             </ScrollView>
 
@@ -272,8 +239,9 @@ const App = () => {
       </SafeAreaView>
     );
   }
+
   function CreateTaskScreen() {
-    const [list, setList] = useState([]);
+    const [todos, dispatch] = useContext(TodoContext);
     const [text, setText] = useState('');
     const [date, setDate] = useState(new Date());
     const [description, setDescription] = useState('');
@@ -281,12 +249,11 @@ const App = () => {
     const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
 
     const addItem = () => {
-
       if (text != '') {
-        //ES6
-        let tmp = [...list, { text: text, state: false, description: description, dueDateString: date }]
-        saveData(tmp);
-        setList(tmp)
+        dispatch({
+          type: "ADD_TODO",
+          payload: { text: text, state: false, description: description, dueDateString: date }
+        });
         setText('')
         setDescription('')
         setDate(new Date())
@@ -297,10 +264,53 @@ const App = () => {
         setTimeout(() => setDisplayNotification(false), 3000);
       }
     };
+
+    //Datepicker functions
+    const showDatePicker = () => {
+
+      setDatePickerVisibility(true);
+    };
+
+    const hideDatePicker = () => {
+      setDatePickerVisibility(false);
+    };
+
+    const handleConfirm = (date) => {
+      setDate(date);
+      hideDatePicker();
+    };
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <Text>Create Task!</Text>
-      </View>
+      <SafeAreaView style={{ flex: 1, backgroundColor: '#efefef' }}>
+        <NavBar title="Add a new task !" />
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <TextInput
+            style={styles.input}
+            placeholder="Type your new task here!"
+            maxLength={40}
+            onChangeText={text => setText(text)}
+            ref={input => { textInput = input }}
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="A little description maybe?"
+            maxLength={200}
+            onChangeText={description => setDescription(description)}
+            ref={input => { descriptionInput = input }}
+          />
+          <Button title="Show Date Picker" onPress={showDatePicker} />
+          <DateTimePickerModal
+            isVisible={isDatePickerVisible}
+            mode="date"
+            onConfirm={handleConfirm}
+            onCancel={hideDatePicker}
+          />
+          <Button
+            style={styles.button}
+            title="Add"
+            onPress={addItem}
+          />
+        </View>
+      </SafeAreaView>
     );
   }
   const Tab = createBottomTabNavigator();
@@ -312,12 +322,12 @@ const App = () => {
             tabBarIcon: ({ focused, color, size }) => {
               let iconName;
 
-              if (route.name === 'Main') {
-                iconName = focused
-                  ? 'ios-information-circle'
-                  : 'ios-information-circle-outline';
+              if (route.name === 'Todo Tasks') {
+                iconName = 'ios-time'
               } else if (route.name === 'CreateTask') {
-                iconName = focused ? 'ios-list-box' : 'ios-list';
+                iconName = focused ? 'ios-add-circle' : 'ios-add-circle-outline';
+              } else if (route.name === 'DoneTasks') {
+                iconName = focused ? 'ios-checkmark-circle' : 'ios-checkmark-circle-outline';
               }
 
               // You can return any component that you like here!
@@ -325,13 +335,13 @@ const App = () => {
             },
           })}
           tabBarOptions={{
-            activeTintColor: 'tomato',
+            activeTintColor: 'red',
             inactiveTintColor: 'gray',
           }}
         >
-          <Tab.Screen name="Main" component={MainScreen} />
-          <Tab.Screen name="CreateTask" component={CreateTaskScreen} />
-          <Tab.Screen name="DoneTasks" component={DoneTasksScreen} />
+          <Tab.Screen name="Todo Tasks" component={MainScreen} options={{ tabBarBadge: 3 }} />
+          <Tab.Screen name="DoneTasks" component={DoneTasksScreen} options={{ tabBarLabel: 'Done Tasks' }} />
+          <Tab.Screen name="CreateTask" component={CreateTaskScreen} options={{ tabBarLabel: 'Create Task' }} />
 
         </Tab.Navigator>
       </NavigationContainer>
