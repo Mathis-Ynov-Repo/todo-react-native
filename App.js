@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import React, { Component, useContext, useState } from 'react';
+import React, { Component, useContext, useEffect, useState } from 'react';
 import { StyleSheet, Text, View, ScrollView, TextInput, SafeAreaView, Button } from 'react-native';
 import Notification from "./notification";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
@@ -13,9 +13,13 @@ import { TodoProvider } from './context/todos.context';
 import { TodoContext } from './context/todos.context';
 
 const App = () => {
-
-  function DoneTasksScreen() {
+  function DoneTasksScreen({ navigation }) {
     const [todos, dispatch] = useContext(TodoContext);
+
+    //Mount from the start so it displays already ?
+    useEffect(() => {
+      navigation.setOptions({ tabBarBadge: list.length });
+    }, [todos]);
 
     const list = todos.filter((v) => v.state === true)
     return (
@@ -43,7 +47,7 @@ const App = () => {
       </SafeAreaView>
     );
   }
-  function MainScreen() {
+  function MainScreen({ navigation }) {
     const [todos, dispatch] = useContext(TodoContext);
 
     const [text, setText] = useState('');
@@ -52,6 +56,9 @@ const App = () => {
     const [displayNotification, setDisplayNotification] = useState(false);
     const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
 
+    useEffect(() => {
+      navigation.setOptions({ tabBarBadge: todos.length });
+    }, [todos]);
     //TODO Categories
     const categories = {
       "shopping": "purple",
@@ -248,6 +255,7 @@ const App = () => {
     const [displayNotification, setDisplayNotification] = useState(false);
     const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
 
+
     const addItem = () => {
       if (text != '') {
         dispatch({
@@ -321,7 +329,6 @@ const App = () => {
           screenOptions={({ route }) => ({
             tabBarIcon: ({ focused, color, size }) => {
               let iconName;
-
               if (route.name === 'Todo Tasks') {
                 iconName = 'ios-time'
               } else if (route.name === 'CreateTask') {
@@ -339,9 +346,9 @@ const App = () => {
             inactiveTintColor: 'gray',
           }}
         >
-          <Tab.Screen name="Todo Tasks" component={MainScreen} options={{ tabBarBadge: 3 }} />
-          <Tab.Screen name="DoneTasks" component={DoneTasksScreen} options={{ tabBarLabel: 'Done Tasks' }} />
-          <Tab.Screen name="CreateTask" component={CreateTaskScreen} options={{ tabBarLabel: 'Create Task' }} />
+          <Tab.Screen name="Todo Tasks" component={MainScreen} />
+          <Tab.Screen name="DoneTasks" component={DoneTasksScreen} options={{ title: 'Done Tasks' }} />
+          <Tab.Screen name="CreateTask" component={CreateTaskScreen} options={{ title: 'Create Task' }} />
 
         </Tab.Navigator>
       </NavigationContainer>
