@@ -50,11 +50,11 @@ const App = () => {
   function MainScreen({ navigation }) {
     const [todos, dispatch] = useContext(TodoContext);
     const list = todos.filter((v) => v.state === false)
-    const [text, setText] = useState('');
-    const [date, setDate] = useState(new Date());
-    const [description, setDescription] = useState('');
-    const [displayNotification, setDisplayNotification] = useState(false);
-    const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
+    // const [text, setText] = useState('');
+    // const [date, setDate] = useState(new Date());
+    // const [description, setDescription] = useState('');
+    // const [displayNotification, setDisplayNotification] = useState(false);
+    // const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
 
     useEffect(() => {
       navigation.setOptions({ tabBarBadge: list.length });
@@ -100,7 +100,7 @@ const App = () => {
     return (
       <SafeAreaView style={{ flex: 1, backgroundColor: '#efefef' }}>
         <NavBar title="Your List" />
-        {displayNotification ? <Notification></Notification> : null}
+        {/* {displayNotification ? <Notification></Notification> : null} */}
 
         {list.length > 0 ? (
           <ScrollView>
@@ -119,7 +119,7 @@ const App = () => {
             </ScrollView>
 
           )}
-        <View>
+        {/* <View>
           <>
             <TextInput
               style={styles.input}
@@ -149,7 +149,7 @@ const App = () => {
             />
           </>
 
-        </View>
+        </View> */}
         <StatusBar style="auto" />
       </SafeAreaView>
     );
