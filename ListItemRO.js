@@ -7,6 +7,7 @@ const ListItemRO = ({ value }) => {
     const [display, setDisplay] = useState(false);
     // Is it better that way or using props 🤔 ?
     const [todos, dispatch] = useContext(TodoContext);
+    // const  {dispatch} = useContext(TodoContext);
 
     //destructuring value prop
     let { state, description, text, dueDateString } = value;

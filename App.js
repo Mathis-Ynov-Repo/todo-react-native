@@ -49,7 +49,7 @@ const App = () => {
   }
   function MainScreen({ navigation }) {
     const [todos, dispatch] = useContext(TodoContext);
-
+    const list = todos.filter((v) => v.state === false)
     const [text, setText] = useState('');
     const [date, setDate] = useState(new Date());
     const [description, setDescription] = useState('');
@@ -57,7 +57,7 @@ const App = () => {
     const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
 
     useEffect(() => {
-      navigation.setOptions({ tabBarBadge: todos.length });
+      navigation.setOptions({ tabBarBadge: list.length });
     }, [todos]);
     //TODO Categories
     const categories = {
@@ -80,99 +80,7 @@ const App = () => {
       hideDatePicker();
     };
 
-    // saveData = async (tmpList) => {
-    //   try {
-    //     await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(tmpList))
-    //     // alert('Data successfully saved')
-    //   } catch (e) {
-    //     console.log(e)
-    //     alert('Failed to save the data to the storage')
-    //   }
-    // }
-    // readData = async () => {
-    //   try {
-    //     const list = await AsyncStorage.getItem(STORAGE_KEY)
-    //     if (list !== null) {
-    //       setList(JSON.parse(list))
-    //     }
-    //   } catch (e) {
-    //     alert('Failed to fetch the data from storage')
-    //   }
-    // }
-    // const clearStorage = async () => {
-    //   try {
-    //     await AsyncStorage.clear()
-    //     alert('Storage successfully cleared!')
-    //   } catch (e) {
-    //     alert('Failed to clear the async storage.')
-    //   }
-    // }
-    // useEffect(() => {
-    //   // clearStorage(),
-    //   readData()
-    // }, [])
-
-    const deleteItem = (item) => {
-      // could have use splice aswell
-
-      //OLD V1
-      // let tmp = list.filter((val) => val != item)
-
-      dispatch({
-        type: "DEL_TODO",
-        payload: item
-      });
-      // OLD V1
-      // saveData(tmp);
-      // setList(tmp);
-    };
-    const changeState = (index) => {
-      dispatch({
-        type: "MOD_TODO_STATE",
-        payload: index
-      });
-      // let tmp = list.map((value, i) => {
-      //   if (index != i) {
-      //     return value
-      //   } else {
-      //     value.state = !value.state;
-      //     return value
-      //   }
-      // })
-      // saveData(tmp);
-      // setList(tmp);
-
-    }
-    const editItem = (item, index) => {
-      // let tmp = list.map((v, i) => i != index ? v : item);
-      // saveData(tmp);
-      dispatch({
-        type: "MOD_TODO",
-        payload: { item, index }
-      })
-      // setIsEditing(false);
-      // setList(tmp);
-    }
     const addItem = () => {
-      //OLD V1
-
-      //ES5
-      // list.push(this.state.text)
-
-      // if (text != '') {
-      //   //ES6
-      //   let tmp = [...list, { text: text, state: false, description: description, dueDateString: date }]
-      //   saveData(tmp);
-      //   setList(tmp)
-      //   setText('')
-      //   setDescription('')
-      //   setDate(new Date())
-      //   textInput.clear()
-      //   descriptionInput.clear()
-      // } else if (displayNotification == false) {
-      //   setDisplayNotification(true);
-      //   setTimeout(() => setDisplayNotification(false), 3000);
-      // }
       if (text != '') {
         dispatch({
           type: "ADD_TODO",
@@ -194,10 +102,10 @@ const App = () => {
         <NavBar title="Your List" />
         {displayNotification ? <Notification></Notification> : null}
 
-        {todos.length > 0 ? (
+        {list.length > 0 ? (
           <ScrollView>
             {todos.map((value, index) => {
-              return <ListItem value={value} index={index} handleEdit={editItem} handleStateChange={changeState} handleDelete={deleteItem} key={index} />
+              return value.state === false && <ListItem value={value} index={index} key={index} />
             })
 
             }
@@ -206,7 +114,7 @@ const App = () => {
         ) : (
             <ScrollView contentContainerStyle={{ alignItems: "center", justifyContent: "center", flexGrow: 1 }}>
 
-              <Text style={{ fontSize: 24 }}>No items in the list yet !</Text>
+              <Text style={{ fontSize: 24 }}>No todos in the list yet !</Text>
 
             </ScrollView>
 
@@ -290,6 +198,7 @@ const App = () => {
     return (
       <SafeAreaView style={{ flex: 1, backgroundColor: '#efefef' }}>
         <NavBar title="Add a new task !" />
+        {displayNotification && <Notification />}
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
           <TextInput
             style={styles.input}

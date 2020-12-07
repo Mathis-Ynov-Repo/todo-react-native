@@ -1,11 +1,14 @@
-import React, { Component, useState } from 'react';
+import React, { Component, useContext, useState } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, TextInput, Button } from 'react-native';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
+import { TodoContext } from './context/todos.context';
 
-const ListItem = ({ value, index, handleEdit, handleStateChange, handleDelete }) => {
+const ListItem = ({ value, index }) => {
     const [display, setDisplay] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
     const [isDatePickerVisibleItem, setDatePickerVisibilityItem] = useState(false);
+    const [todos, dispatch] = useContext(TodoContext);
+
 
 
     //destructuring value prop
@@ -50,6 +53,21 @@ const ListItem = ({ value, index, handleEdit, handleStateChange, handleDelete })
     }
 
     handleDisplay = () => setDisplay(!display)
+
+    const handleEdit = (item, index) => dispatch({
+        type: "MOD_TODO",
+        payload: { item, index }
+    })
+
+    const handleDelete = () => dispatch({
+        type: "DEL_TODO",
+        payload: value
+    })
+
+    const handleStateChange = (index) => dispatch({
+        type: "MOD_TODO_STATE",
+        payload: index
+    })
 
     const confirmEdit = (item, index) => {
         handleEdit(item, index);
