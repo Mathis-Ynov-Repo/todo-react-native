@@ -2,6 +2,8 @@ import React, { Component, useContext, useState } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, TextInput, Button } from 'react-native';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { TodoContext } from './context/todos.context';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+
 
 const ListItem = ({ value, index }) => {
     const [display, setDisplay] = useState(false);
@@ -89,10 +91,9 @@ const ListItem = ({ value, index }) => {
                     </Text>
 
                     <TouchableOpacity
-                        style={styles.button}
                         onPress={() => handleDelete(value)}
                     >
-                        <Text style={{ color: 'red', margin: 5 }}>🗑️</Text>
+                        <Ionicons name="md-trash" size={18} color="red" />
                     </TouchableOpacity>
                     <TouchableOpacity
                         style={styles.button}
@@ -104,7 +105,8 @@ const ListItem = ({ value, index }) => {
                         style={styles}
                         onPress={handleDisplay}
                     >
-                        <Text style={{ color: 'grey', margin: 5 }}>{display ? '⬆️' : '⬇️'}</Text>
+                        <Text style={{ color: 'grey', margin: 5 }}>{display ? <Ionicons name="ios-arrow-dropdown-circle" size={18} color="orange" />
+                            : <Ionicons name="ios-arrow-dropup-circle" size={18} color="orange" />}</Text>
                     </TouchableOpacity>
                     {/* if displayBtn is pressed, then, show either the item description or the no description message. Else dont do anything */}
                     {/* {display ? (itemDescription ? descriptionView : noDescriptionMsg) : null} */}

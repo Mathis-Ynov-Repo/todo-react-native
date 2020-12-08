@@ -166,7 +166,7 @@ const App = () => {
               <Text style={styles.textStyle}>{category.text} </Text>
               <Ionicons name="ios-arrow-dropdown" size={18} color="white" />
             </TouchableOpacity>
-            <TouchableOpacity style={{ ...styles.timeButton }} onPress={showDatePicker}>
+            <TouchableOpacity style={{ ...styles.iconButton }} onPress={showDatePicker}>
               <Ionicons name="md-time" size={18} color="white" />
             </TouchableOpacity>
           </View>
@@ -194,31 +194,33 @@ const App = () => {
           >
             <View style={styles.centeredView}>
               <View style={styles.modalView}>
-                {
-                  categories.map((category) => {
-                    return <TouchableOpacity
-                      key={category.id}
-                      style={{ ...styles.openButton, backgroundColor: category.color }}
-                      onPress={() => {
-                        setModalVisible(!modalVisible);
-                        setCategory(category);
-                      }}
-                    >
-                      <Text style={styles.textStyle}>{category.text}</Text>
-                    </TouchableOpacity>
-                  })
-                }
-
+                <View style={{ display: "flex", flexDirection: "row", flexWrap: "wrap", justifyContent: "space-evenly", padding: 10 }}>
+                  {
+                    categories.map((category) => {
+                      return <TouchableOpacity
+                        key={category.id}
+                        style={{ ...styles.openButton, backgroundColor: category.color, margin: 5 }}
+                        onPress={() => {
+                          setModalVisible(!modalVisible);
+                          setCategory(category);
+                        }}
+                      >
+                        <Text style={styles.textStyle}>{category.text}</Text>
+                      </TouchableOpacity>
+                    })
+                  }
+                </View>
 
                 <TouchableHighlight
-                  style={styles.openButton}
+                  style={{ ...styles.iconButton, backgroundColor: "#DC143C" }}
+
                   underlayColor={category.color}
                   activeOpacity={0.6}
                   onPress={() => {
                     setModalVisible(!modalVisible);
                   }}
                 >
-                  <Text style={styles.textStyle}>Close</Text>
+                  <Ionicons name="md-close" size={18} color="white" />
                 </TouchableHighlight>
               </View>
             </View>
@@ -322,7 +324,7 @@ const styles = StyleSheet.create({
     padding: 10,
     elevation: 2
   },
-  timeButton: {
+  iconButton: {
     backgroundColor: "blue",
     padding: 10,
     elevation: 2,
@@ -333,19 +335,21 @@ const styles = StyleSheet.create({
     margin: 20,
     backgroundColor: "white",
     borderRadius: 20,
-    padding: 35,
+    padding: 20,
     alignItems: "center",
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
       height: 2
     },
+    width: "75%",
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
-    elevation: 5
+    elevation: 5,
   },
   centeredView: {
     flex: 1,
+    display: "flex",
     justifyContent: "center",
     alignItems: "center",
     marginTop: 22

@@ -1,6 +1,6 @@
 import React, { Component, useContext, useState } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, TextInput, Button } from 'react-native';
-import DateTimePickerModal from "react-native-modal-datetime-picker";
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import { TodoContext } from './context/todos.context';
 
 const ListItemRO = ({ value }) => {
@@ -56,16 +56,16 @@ const ListItemRO = ({ value }) => {
                 </Text>
 
                 <TouchableOpacity
-                    style={styles.button}
                     onPress={() => handleDelete(value)}
                 >
-                    <Text style={{ color: 'red', margin: 5 }}>🗑️</Text>
+                    <Ionicons name="md-trash" size={18} color="red" />
                 </TouchableOpacity>
                 <TouchableOpacity
                     style={styles}
                     onPress={handleDisplay}
                 >
-                    <Text style={{ color: 'grey', margin: 5 }}>{display ? '⬆️' : '⬇️'}</Text>
+                    <Text style={{ color: 'grey', margin: 5 }}>{display ? <Ionicons name="ios-arrow-dropdown-circle" size={18} color="orange" />
+                        : <Ionicons name="ios-arrow-dropup-circle" size={18} color="orange" />}</Text>
                 </TouchableOpacity>
                 {display ? <Text style={{ width: "100%" }}>{displayedDescription}</Text> : null}
             </View>
