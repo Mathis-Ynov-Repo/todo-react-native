@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { Component, useContext, useEffect, useState } from 'react';
-import { StyleSheet, Text, View, ScrollView, TextInput, SafeAreaView, Button, Modal, Pressable, Alert } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, TextInput, SafeAreaView, Button, Modal, Pressable, TouchableHighlight, TouchableOpacity } from 'react-native';
 import Notification from "./notification";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import ListItem from "./ListItem";
@@ -249,7 +249,7 @@ const App = () => {
               <View style={styles.modalView}>
                 {
                   categories.map((category) => {
-                    return <Pressable
+                    return <TouchableOpacity
                       key={category.id}
                       style={{ ...styles.openButton, backgroundColor: category.color }}
                       onPress={() => {
@@ -258,32 +258,32 @@ const App = () => {
                       }}
                     >
                       <Text style={styles.textStyle}>{category.text}</Text>
-                    </Pressable>
-                    // return <Button title={category.text} color={category.color} onPress={() => { setCategory(category), setModalVisible(false) }}></Button>
-                    // return <Text style={{ ...styles.modalText, color: category.color }} key={category.id}>{category.text}</Text>
+                    </TouchableOpacity>
                   })
                 }
 
 
-                <Pressable
+                <TouchableHighlight
                   style={styles.openButton}
+                  underlayColor={category.color}
+                  activeOpacity={0.6}
                   onPress={() => {
                     setModalVisible(!modalVisible);
                   }}
                 >
                   <Text style={styles.textStyle}>Close</Text>
-                </Pressable>
+                </TouchableHighlight>
               </View>
             </View>
           </Modal>
-          <Pressable
+          <TouchableOpacity
             style={{ ...styles.openButton, backgroundColor: category.color }}
             onPress={() => {
               setModalVisible(true);
             }}
           >
             <Text style={styles.textStyle}>{category.text}</Text>
-          </Pressable>
+          </TouchableOpacity>
         </View>
       </SafeAreaView>
     );

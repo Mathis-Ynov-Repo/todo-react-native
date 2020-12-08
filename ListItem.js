@@ -78,7 +78,7 @@ const ListItem = ({ value, index }) => {
 
         <View>
             {!isEditing ? (
-                <TouchableOpacity style={[styles.item, { borderBottomColor: category.color, borderBottomWidth: 5, borderBottomEndRadius: 10 }, state == true ? styles.success : styles.todo]}
+                <TouchableOpacity delayLongPress={1000} onLongPress={() => setIsEditing(true)} style={[styles.item, { borderBottomColor: category.color, borderBottomWidth: 5, borderBottomEndRadius: 10 }, state == true ? styles.success : styles.todo]}
                     onPress={() => handleStateChange(index)}
                 >
                     <Text style={{ fontSize: 18, flex: 0.7 }}>
