@@ -141,7 +141,7 @@ const ListItem = ({ value, index }) => {
                         <TouchableOpacity
                             style={styles.buttonSuccess}
                             //inject destructured props into a new object
-                            onPress={() => confirmEdit({ state, description: itemDescription, text: itemText, dueDateString: dueDate }, index)}
+                            onPress={() => confirmEdit({ state, description: itemDescription, text: itemText, dueDateString: dueDate, category: category }, index)}
                         >
                             <Text style={{ color: 'green', margin: 5 }}>✔️</Text>
                         </TouchableOpacity>

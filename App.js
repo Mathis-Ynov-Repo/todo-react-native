@@ -50,48 +50,10 @@ const App = () => {
   function MainScreen({ navigation }) {
     const [todos, dispatch] = useContext(TodoContext);
     const list = todos.filter((v) => v.state === false)
-    // const [text, setText] = useState('');
-    // const [date, setDate] = useState(new Date());
-    // const [description, setDescription] = useState('');
-    // const [displayNotification, setDisplayNotification] = useState(false);
-    // const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
 
     useEffect(() => {
       navigation.setOptions({ tabBarBadge: list.length });
     }, [todos]);
-
-
-    //Datepicker functions
-    // const showDatePicker = () => {
-
-    //   setDatePickerVisibility(true);
-    // };
-
-    // const hideDatePicker = () => {
-    //   setDatePickerVisibility(false);
-    // };
-
-    // const handleConfirm = (date) => {
-    //   setDate(date);
-    //   hideDatePicker();
-    // };
-
-    // const addItem = () => {
-    //   if (text != '') {
-    //     dispatch({
-    //       type: "ADD_TODO",
-    //       payload: { text: text, state: false, description: description, dueDateString: date }
-    //     });
-    //     setText('')
-    //     setDescription('')
-    //     setDate(new Date())
-    //     textInput.clear()
-    //     descriptionInput.clear()
-    //   } else if (displayNotification == false) {
-    //     setDisplayNotification(true);
-    //     setTimeout(() => setDisplayNotification(false), 3000);
-    //   }
-    // };
 
     return (
       <SafeAreaView style={{ flex: 1, backgroundColor: '#efefef' }}>
@@ -115,37 +77,6 @@ const App = () => {
             </ScrollView>
 
           )}
-        {/* <View>
-          <>
-            <TextInput
-              style={styles.input}
-              placeholder="Type your new task here!"
-              maxLength={40}
-              onChangeText={text => setText(text)}
-              ref={input => { textInput = input }}
-            />
-            <TextInput
-              style={styles.input}
-              placeholder="A little description maybe?"
-              maxLength={200}
-              onChangeText={description => setDescription(description)}
-              ref={input => { descriptionInput = input }}
-            />
-            <Button title="Show Date Picker" onPress={showDatePicker} />
-            <DateTimePickerModal
-              isVisible={isDatePickerVisible}
-              mode="date"
-              onConfirm={handleConfirm}
-              onCancel={hideDatePicker}
-            />
-            <Button
-              style={styles.button}
-              title="Add"
-              onPress={addItem}
-            />
-          </>
-
-        </View> */}
         <StatusBar style="auto" />
       </SafeAreaView>
     );
@@ -224,17 +155,33 @@ const App = () => {
             onChangeText={description => setDescription(description)}
             ref={input => { descriptionInput = input }}
           />
-          <Button title="Show Date Picker" onPress={showDatePicker} />
+          <View style={{ display: "flex", flexDirection: "row", justifyContent: "space-evenly", padding: 5, width: "100%" }}>
+
+            <TouchableOpacity
+              style={{ ...styles.openButton, backgroundColor: category.color, alignItems: "center", flexDirection: "row" }}
+              onPress={() => {
+                setModalVisible(true);
+              }}
+            >
+              <Text style={styles.textStyle}>{category.text} </Text>
+              <Ionicons name="ios-arrow-dropdown" size={18} color="white" />
+            </TouchableOpacity>
+            <TouchableOpacity style={{ ...styles.timeButton }} onPress={showDatePicker}>
+              <Ionicons name="md-time" size={18} color="white" />
+            </TouchableOpacity>
+          </View>
+
+          <Button
+            style={styles.button}
+            title="Add"
+            onPress={addItem}
+          />
+          {/* Date picker modal */}
           <DateTimePickerModal
             isVisible={isDatePickerVisible}
             mode="date"
             onConfirm={handleConfirm}
             onCancel={hideDatePicker}
-          />
-          <Button
-            style={styles.button}
-            title="Add"
-            onPress={addItem}
           />
           {/* Category Modal  */}
           <Modal
@@ -276,16 +223,8 @@ const App = () => {
               </View>
             </View>
           </Modal>
-          <TouchableOpacity
-            style={{ ...styles.openButton, backgroundColor: category.color }}
-            onPress={() => {
-              setModalVisible(true);
-            }}
-          >
-            <Text style={styles.textStyle}>{category.text}</Text>
-          </TouchableOpacity>
         </View>
-      </SafeAreaView>
+      </SafeAreaView >
     );
   }
   const Tab = createBottomTabNavigator();
@@ -382,6 +321,13 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     padding: 10,
     elevation: 2
+  },
+  timeButton: {
+    backgroundColor: "blue",
+    padding: 10,
+    elevation: 2,
+    borderRadius: 10,
+
   },
   modalView: {
     margin: 20,
