@@ -8,6 +8,7 @@ const reducer = (todos, action) => {
     switch (action.type) {
         case "ADD_TODO":
             let tmpAddTodos = [...todos, action.payload]
+            console.log(tmpAddTodos)
             saveData(tmpAddTodos);
             return tmpAddTodos;
         case "SET_TODOS":

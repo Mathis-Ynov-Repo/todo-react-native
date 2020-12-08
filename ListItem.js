@@ -12,7 +12,7 @@ const ListItem = ({ value, index }) => {
 
 
     //destructuring value prop
-    let { state, description, text, dueDateString } = value;
+    let { state, description, text, dueDateString, category } = value;
 
     //declare states with those values
     const [dueDate, setDueDate] = useState(new Date(dueDateString))
@@ -78,7 +78,7 @@ const ListItem = ({ value, index }) => {
 
         <View>
             {!isEditing ? (
-                <TouchableOpacity style={[styles.item, state == true ? styles.success : styles.todo]}
+                <TouchableOpacity style={[styles.item, { borderBottomColor: category.color, borderBottomWidth: 5, borderBottomEndRadius: 10 }, state == true ? styles.success : styles.todo]}
                     onPress={() => handleStateChange(index)}
                 >
                     <Text style={{ fontSize: 18, flex: 0.7 }}>
@@ -111,7 +111,7 @@ const ListItem = ({ value, index }) => {
                     {display ? <Text style={{ width: "100%" }}>{displayedDescription}</Text> : null}
                 </TouchableOpacity>
             ) : (
-                    <View style={[styles.item, styles.edit]}>
+                    <View style={[styles.item, styles.edit, { borderBottomColor: category.color, borderBottomWidth: 5, borderBottomEndRadius: 10 }]}>
                         {/* <TouchableOpacity style={[styles.item, state == true ? styles.success : styles.todo]}
               onPress={() => changeState(index)}
             > */}
@@ -185,7 +185,9 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-evenly',
         flexWrap: "wrap",
-        alignItems: "center"
+        alignItems: "center",
+        borderTopLeftRadius: 10
+
     },
     success: {
         borderLeftColor: 'green',

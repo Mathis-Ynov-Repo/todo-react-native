@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { Component, useContext, useEffect, useState } from 'react';
-import { StyleSheet, Text, View, ScrollView, TextInput, SafeAreaView, Button } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, TextInput, SafeAreaView, Button, Modal, Pressable, Alert } from 'react-native';
 import Notification from "./notification";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import ListItem from "./ListItem";
@@ -14,7 +14,7 @@ import { TodoContext } from './context/todos.context';
 
 const App = () => {
   function DoneTasksScreen({ navigation }) {
-    const [todos, dispatch] = useContext(TodoContext);
+    const [todos] = useContext(TodoContext);
 
     //Mount from the start so it displays already ?
     useEffect(() => {
@@ -59,43 +59,39 @@ const App = () => {
     useEffect(() => {
       navigation.setOptions({ tabBarBadge: list.length });
     }, [todos]);
-    //TODO Categories
-    const categories = {
-      "shopping": "purple",
-      "tech": "blue"
-    }
+
 
     //Datepicker functions
-    const showDatePicker = () => {
+    // const showDatePicker = () => {
 
-      setDatePickerVisibility(true);
-    };
+    //   setDatePickerVisibility(true);
+    // };
 
-    const hideDatePicker = () => {
-      setDatePickerVisibility(false);
-    };
+    // const hideDatePicker = () => {
+    //   setDatePickerVisibility(false);
+    // };
 
-    const handleConfirm = (date) => {
-      setDate(date);
-      hideDatePicker();
-    };
+    // const handleConfirm = (date) => {
+    //   setDate(date);
+    //   hideDatePicker();
+    // };
 
-    const addItem = () => {
-      if (text != '') {
-        dispatch({
-          type: "ADD_TODO",
-          payload: { text: text, state: false, description: description, dueDateString: date }
-        });
-        setText('')
-        setDescription('')
-        setDate(new Date())
-        textInput.clear()
-        descriptionInput.clear()
-      } else if (displayNotification == false) {
-        setDisplayNotification(true);
-        setTimeout(() => setDisplayNotification(false), 3000);
-      }
-    };
+    // const addItem = () => {
+    //   if (text != '') {
+    //     dispatch({
+    //       type: "ADD_TODO",
+    //       payload: { text: text, state: false, description: description, dueDateString: date }
+    //     });
+    //     setText('')
+    //     setDescription('')
+    //     setDate(new Date())
+    //     textInput.clear()
+    //     descriptionInput.clear()
+    //   } else if (displayNotification == false) {
+    //     setDisplayNotification(true);
+    //     setTimeout(() => setDisplayNotification(false), 3000);
+    //   }
+    // };
 
     return (
       <SafeAreaView style={{ flex: 1, backgroundColor: '#efefef' }}>
@@ -156,19 +152,33 @@ const App = () => {
   }
 
   function CreateTaskScreen() {
+
     const [todos, dispatch] = useContext(TodoContext);
     const [text, setText] = useState('');
     const [date, setDate] = useState(new Date());
+    const [category, setCategory] = useState({ id: 1, text: "Shopping", color: "purple" },);
+
     const [description, setDescription] = useState('');
     const [displayNotification, setDisplayNotification] = useState(false);
     const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
+    const [modalVisible, setModalVisible] = useState(false);
+
+    //TODO Categories
+
+    const categories = [
+      { id: 1, text: "Shopping", color: "purple" },
+      { id: 2, text: "Gym", color: "blue" },
+      { id: 3, text: "Housework", color: "green" },
+      { id: 4, text: "Work", color: "red" }
+
+    ]
 
 
     const addItem = () => {
       if (text != '') {
         dispatch({
           type: "ADD_TODO",
-          payload: { text: text, state: false, description: description, dueDateString: date }
+          payload: { text: text, state: false, description: description, dueDateString: date, category: category }
         });
         setText('')
         setDescription('')
@@ -226,6 +236,54 @@ const App = () => {
             title="Add"
             onPress={addItem}
           />
+          {/* Category Modal  */}
+          <Modal
+            animationType="slide"
+            transparent={true}
+            visible={modalVisible}
+            onRequestClose={() => {
+              setModalVisible(!modalVisible);
+            }}
+          >
+            <View style={styles.centeredView}>
+              <View style={styles.modalView}>
+                {
+                  categories.map((category) => {
+                    return <Pressable
+                      key={category.id}
+                      style={{ ...styles.openButton, backgroundColor: category.color }}
+                      onPress={() => {
+                        setModalVisible(!modalVisible);
+                        setCategory(category);
+                      }}
+                    >
+                      <Text style={styles.textStyle}>{category.text}</Text>
+                    </Pressable>
+                    // return <Button title={category.text} color={category.color} onPress={() => { setCategory(category), setModalVisible(false) }}></Button>
+                    // return <Text style={{ ...styles.modalText, color: category.color }} key={category.id}>{category.text}</Text>
+                  })
+                }
+
+
+                <Pressable
+                  style={styles.openButton}
+                  onPress={() => {
+                    setModalVisible(!modalVisible);
+                  }}
+                >
+                  <Text style={styles.textStyle}>Close</Text>
+                </Pressable>
+              </View>
+            </View>
+          </Modal>
+          <Pressable
+            style={{ ...styles.openButton, backgroundColor: category.color }}
+            onPress={() => {
+              setModalVisible(true);
+            }}
+          >
+            <Text style={styles.textStyle}>{category.text}</Text>
+          </Pressable>
         </View>
       </SafeAreaView>
     );
@@ -309,6 +367,42 @@ const styles = StyleSheet.create({
   date: {
     fontSize: 14,
     flex: 0.3
-  }
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: "center"
+  },
+  textStyle: {
+    color: "white",
+    fontWeight: "bold",
+    textAlign: "center"
+  },
+  openButton: {
+    backgroundColor: "#F194FF",
+    borderRadius: 20,
+    padding: 10,
+    elevation: 2
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 35,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 22
+  },
 });
 export default App;

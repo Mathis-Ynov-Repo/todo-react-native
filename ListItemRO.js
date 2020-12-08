@@ -10,7 +10,7 @@ const ListItemRO = ({ value }) => {
     // const  {dispatch} = useContext(TodoContext);
 
     //destructuring value prop
-    let { state, description, text, dueDateString } = value;
+    let { state, description, text, dueDateString, category } = value;
 
     //declare states with those values
     const dueDate = new Date(dueDateString);
@@ -47,7 +47,7 @@ const ListItemRO = ({ value }) => {
     return (
 
         <View>
-            <View style={[styles.item, state == true ? styles.success : styles.todo]}>
+            <View style={[styles.item, { borderBottomColor: category.color, borderBottomWidth: 5, borderBottomEndRadius: 10 }, state == true ? styles.success : styles.todo]} >
                 <Text style={{ fontSize: 18, flex: 0.7 }}>
                     {text}
                 </Text>
@@ -69,7 +69,7 @@ const ListItemRO = ({ value }) => {
                 </TouchableOpacity>
                 {display ? <Text style={{ width: "100%" }}>{displayedDescription}</Text> : null}
             </View>
-        </View>
+        </View >
     );
 };
 const styles = StyleSheet.create({
@@ -86,7 +86,8 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-evenly',
         flexWrap: "wrap",
-        alignItems: "center"
+        alignItems: "center",
+        borderTopLeftRadius: 10
     },
     success: {
         borderLeftColor: 'green',
