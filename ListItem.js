@@ -51,11 +51,17 @@ const ListItem = ({ value, index }) => {
         let currMonth = currDate.getMonth();
         let currYear = currDate.getFullYear();
         if (currMonth > todoMonth && currYear >= todoYear) {
-            return { color: 'red' }
+            // return { color: 'red' }
+            return 'red'
+
         } else if (currMonth == todoMonth && currYear == todoYear) {
-            return { color: 'orange' }
+            // return { color: 'orange' }
+            return 'orange'
+
         } else {
-            return { color: 'green' }
+            // return { color: 'green' }
+            return 'green'
+
         }
     }
 
@@ -90,7 +96,7 @@ const ListItem = ({ value, index }) => {
                     <Text style={{ fontSize: 18, flex: 0.7 }}>
                         {text}
                     </Text>
-                    <Text style={styles.date, getDateStyle()}>
+                    <Text style={styles.date, { color: getDateStyle() }}>
                         {displayedDate}
                     </Text>
 
@@ -100,17 +106,17 @@ const ListItem = ({ value, index }) => {
                         <Ionicons name="md-trash" size={18} color="red" />
                     </TouchableOpacity>
                     <TouchableOpacity
-                        style={styles.button}
                         onPress={() => { setIsEditing(true), setDisplay(true) }}
                     >
-                        <Text style={{ color: 'orange', margin: 5 }}>📝</Text>
+                        <Ionicons name="md-create" size={18} color="orange" />
+
                     </TouchableOpacity>
                     <TouchableOpacity
                         style={styles}
                         onPress={handleDisplay}
                     >
-                        <Text style={{ color: 'grey', margin: 5 }}>{display ? <Ionicons name="ios-arrow-dropdown-circle" size={18} color="orange" />
-                            : <Ionicons name="ios-arrow-dropup-circle" size={18} color="orange" />}</Text>
+                        <Text style={{ color: 'grey', margin: 5 }}>{display ? <Ionicons name="ios-arrow-dropdown-circle" size={18} color={category.color} />
+                            : <Ionicons name="ios-arrow-dropup-circle" size={18} color={category.color} />}</Text>
                     </TouchableOpacity>
                     {/* si displayBtn est pressé, alors, afficher soit la descritption ou le message de non description. Sinon, ne rien faire */}
                     {display ? <Text style={{ width: "100%" }}>{displayedDescription}</Text> : null}
@@ -123,10 +129,15 @@ const ListItem = ({ value, index }) => {
                             maxLength={40}
                             onChangeText={newtext => setItemText(newtext)}
                         />
-                        <Text style={styles.date, getDateStyle()}>
+                        <Text style={styles.date, { color: getDateStyle() }}>
                             {displayedDate}
                         </Text>
-                        <Button title="⏱️" onPress={showDatePickerItem} />
+                        <TouchableOpacity
+                            onPress={() => { showDatePickerItem() }}
+                        >
+                            <Ionicons name="md-time" size={24} color={getDateStyle()} />
+                        </TouchableOpacity>
+                        {/* <Button title="⏱️" onPress={showDatePickerItem} /> */}
                         <DateTimePickerModal
                             isVisible={isDatePickerVisibleItem}
                             mode="date"
@@ -135,17 +146,15 @@ const ListItem = ({ value, index }) => {
                             onCancel={hideDatePickerItem}
                         />
                         <TouchableOpacity
-                            style={styles.button}
                             onPress={() => { setIsEditing(false), setDueDate(new Date(dueDateString)) }}
                         >
-                            <Text style={{ color: 'red', margin: 5 }}>❌</Text>
+                            <Ionicons name="md-close" size={24} color="red" />
                         </TouchableOpacity>
                         <TouchableOpacity
-                            style={styles.buttonSuccess}
                             //injection des props destructurées et modifiées dans un nouvel object
                             onPress={() => confirmEdit({ state, description: itemDescription, text: itemText, dueDateString: dueDate, category: category }, index)}
                         >
-                            <Text style={{ color: 'green', margin: 5 }}>✔️</Text>
+                            <Ionicons name="md-checkmark" size={24} color="green" />
                         </TouchableOpacity>
                         <TextInput
                             style={{ width: "100%" }}
@@ -178,14 +187,6 @@ const styles = StyleSheet.create({
     },
     todo: {
         borderLeftColor: 'red',
-    },
-    button: {
-        borderColor: 'red',
-        borderWidth: 1
-    },
-    buttonSuccess: {
-        borderColor: 'green',
-        borderWidth: 1
     },
     date: {
         fontSize: 14,

@@ -61,8 +61,8 @@ const ListItemRO = ({ value }) => {
                     onPress={handleDisplay}
                 >
                     {display ?
-                        <Ionicons name="ios-arrow-dropdown-circle" size={18} color="orange" style={{ margin: 5 }} />
-                        : <Ionicons name="ios-arrow-dropup-circle" size={18} color="orange" style={{ margin: 5 }} />}
+                        <Ionicons name="ios-arrow-dropdown-circle" size={18} color={category.color} style={{ margin: 5 }} />
+                        : <Ionicons name="ios-arrow-dropup-circle" size={18} color={category.color} style={{ margin: 5 }} />}
                 </TouchableOpacity>
                 {display && <Text style={{ width: "100%" }}>{displayedDescription}</Text>}
             </View>
