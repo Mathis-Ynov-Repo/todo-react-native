@@ -1,17 +1,20 @@
-import React, { Component, useEffect, useState, useRef } from 'react';
-import { View, Text, Animated, StyleSheet } from 'react-native';
+import React, { Component, useEffect, useRef } from 'react';
+import { Text, Animated, StyleSheet } from 'react-native';
 
+//petite notification rouge
 const Notification = () => {
     const displayAnim = useRef(new Animated.Value(0)).current;
+
     function animateOut() {
         Animated.timing(
             displayAnim, {
-            toValue: -20,
+            toValue: -30,
             duration: 500,
             useNativeDriver: true
         }
         ).start()
     }
+
     function animateIn() {
         Animated.timing(
             displayAnim, {
@@ -21,10 +24,12 @@ const Notification = () => {
         }
         ).start()
     }
+    //lance l'animation à la création du composant
     React.useEffect(() => {
         animateIn()
     }, [displayAnim]);
 
+    //lance le timer de l'animation, lance la fonction d'animation de sortie à la fin de ce dernier et le clear à l'unmount
     useEffect(() => {
         const timer = setTimeout(() => {
             animateOut()
@@ -34,7 +39,7 @@ const Notification = () => {
 
     return (
         <Animated.View style={{ ...styles.animatedContainer, transform: [{ translateY: displayAnim }] }}>
-            <Text style={{ color: "white" }}> Please enter a title to your task ! </Text>
+            <Text style={{ color: "white", fontWeight: "bold", padding: 5 }}> Please enter a title for your task ! </Text>
         </Animated.View>
     )
 

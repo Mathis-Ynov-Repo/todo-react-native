@@ -4,7 +4,7 @@ import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { TodoContext } from './context/todos.context';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
-
+//Tâche avec option de modification ou changement d'état
 const ListItem = ({ value, index }) => {
     const [display, setDisplay] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
@@ -13,14 +13,15 @@ const ListItem = ({ value, index }) => {
 
 
 
-    //destructuring value prop
+    //desctructuration de la prop value
     let { state, description, text, dueDateString, category } = value;
 
-    //declare states with those values
+    //declaration des states avec cets valeurs
     const [dueDate, setDueDate] = useState(new Date(dueDateString))
     const [itemText, setItemText] = useState(text)
     const [itemDescription, setItemDescription] = useState(description)
 
+    //Récupération de la data au format adéquat (d/m/Y)
     let todoMonth = dueDate.getMonth();
     let todoDay = dueDate.getDate();
     let todoYear = dueDate.getFullYear()
@@ -41,6 +42,10 @@ const ListItem = ({ value, index }) => {
         hideDatePickerItem();
     };
 
+    //change la couleur de la date ,
+    //rouge si un mois sépare la date actuelle et la date de la tâche (retard), 
+    //orange si elle est dans le même mois, 
+    //vert si la date de la tâches est plus loin dans l'année
     getDateStyle = () => {
         let currDate = new Date();
         let currMonth = currDate.getMonth();
@@ -77,7 +82,6 @@ const ListItem = ({ value, index }) => {
     }
 
     return (
-
         <View>
             {!isEditing ? (
                 <TouchableOpacity delayLongPress={1000} onLongPress={() => setIsEditing(true)} style={[styles.item, { borderBottomColor: category.color, borderBottomWidth: 5, borderBottomEndRadius: 10 }, state == true ? styles.success : styles.todo]}
@@ -108,15 +112,11 @@ const ListItem = ({ value, index }) => {
                         <Text style={{ color: 'grey', margin: 5 }}>{display ? <Ionicons name="ios-arrow-dropdown-circle" size={18} color="orange" />
                             : <Ionicons name="ios-arrow-dropup-circle" size={18} color="orange" />}</Text>
                     </TouchableOpacity>
-                    {/* if displayBtn is pressed, then, show either the item description or the no description message. Else dont do anything */}
-                    {/* {display ? (itemDescription ? descriptionView : noDescriptionMsg) : null} */}
+                    {/* si displayBtn est pressé, alors, afficher soit la descritption ou le message de non description. Sinon, ne rien faire */}
                     {display ? <Text style={{ width: "100%" }}>{displayedDescription}</Text> : null}
                 </TouchableOpacity>
             ) : (
                     <View style={[styles.item, styles.edit, { borderBottomColor: category.color, borderBottomWidth: 5, borderBottomEndRadius: 10 }]}>
-                        {/* <TouchableOpacity style={[styles.item, state == true ? styles.success : styles.todo]}
-              onPress={() => changeState(index)}
-            > */}
                         <TextInput
                             style={{ fontSize: 18, flex: 0.7 }}
                             placeholder={text}
@@ -142,7 +142,7 @@ const ListItem = ({ value, index }) => {
                         </TouchableOpacity>
                         <TouchableOpacity
                             style={styles.buttonSuccess}
-                            //inject destructured props into a new object
+                            //injection des props destructurées et modifiées dans un nouvel object
                             onPress={() => confirmEdit({ state, description: itemDescription, text: itemText, dueDateString: dueDate, category: category }, index)}
                         >
                             <Text style={{ color: 'green', margin: 5 }}>✔️</Text>
@@ -153,32 +153,12 @@ const ListItem = ({ value, index }) => {
                             maxLength={200}
                             onChangeText={newDescription => setItemDescription(newDescription)}
                         />
-                        {/* <TouchableOpacity
-                style={styles}
-                onPress={handleDisplay}
-              >
-                <Text style={{ color: 'grey', margin: 5 }}>V</Text>
-              </TouchableOpacity> */}
-                        {/* if displayBtn is pressed, then, show either the item description or the no description message. Else dont do anything */}
-                        {/* {display ? (itemDescription ? descriptionView : noDescriptionMsg) : null} */}
-                        {/* </TouchableOpacity> */}
                     </View>
-
                 )}
-
-
-
         </View>
     );
 };
 const styles = StyleSheet.create({
-
-    // Donnez le style que vous souhaitez Ã  vos composant
-
-    container: {
-        flex: 1,
-        backgroundColor: '#efefef',
-    },
     item: {
         margin: 5,
         padding: 5,
@@ -189,7 +169,6 @@ const styles = StyleSheet.create({
         flexWrap: "wrap",
         alignItems: "center",
         borderTopLeftRadius: 10
-
     },
     success: {
         borderLeftColor: 'green',
@@ -204,14 +183,9 @@ const styles = StyleSheet.create({
         borderColor: 'red',
         borderWidth: 1
     },
-
     buttonSuccess: {
         borderColor: 'green',
         borderWidth: 1
-    },
-    input: {
-        fontSize: 24,
-        textAlign: "center"
     },
     date: {
         fontSize: 14,

@@ -1,27 +1,32 @@
 
-import React, { createContext, useEffect, useReducer, useState } from 'react';
+import React, { createContext, useEffect, useReducer } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage'
 export const TodoContext = createContext();
 
 //Reducer
 const reducer = (todos, action) => {
     switch (action.type) {
+        //ajout de la tâche
         case "ADD_TODO":
             let tmpAddTodos = [...todos, action.payload]
-            console.log(tmpAddTodos)
             saveData(tmpAddTodos);
             return tmpAddTodos;
+        //ajout des tâches (depuis l'async storage généralement)
         case "SET_TODOS":
             return action.payload;
+        //suppression d'une tâche
         case "DEL_TODO":
             let tmpDelTodos = todos.filter(
                 todo => todo !== action.payload
             );
             saveData(tmpDelTodos);
             return tmpDelTodos;
+        //modification d'une tâche
         case "MOD_TODO":
             let tmpModTodos = todos.map((todo, index) => index !== action.payload.index ? todo : action.payload.item);
             return tmpModTodos
+        //modification du l'état (todo = false ou done = true) d'une tâche
+
         case "MOD_TODO_STATE":
             let tmpModeStateTodos = todos.map((value, i) => {
                 if (action.payload !== i) {
@@ -38,11 +43,13 @@ const reducer = (todos, action) => {
             throw new Error();
     }
 };
+
 const STORAGE_KEY = 'TASKS'
+
 export const TodoProvider = (props) => {
     const [todos, dispatch] = useReducer(reducer, []);
-    // console.log(todos)
 
+    //Récupération des données en asyncstorage au lancement de l'app
     const readData = async () => {
         try {
             const list = await AsyncStorage.getItem(STORAGE_KEY)
@@ -59,15 +66,18 @@ export const TodoProvider = (props) => {
             alert('Failed to fetch the data from storage')
         }
     }
+
+    //Sauvegarde des données en asyncstorage
     saveData = async (tmpList) => {
         try {
             await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(tmpList))
-            // alert('Data successfully saved')
         } catch (e) {
             console.log(e)
             alert('Failed to save the data to the storage')
         }
     }
+
+    //sert en cas de besoin de tests
     const clearStorage = async () => {
         try {
             await AsyncStorage.clear()
@@ -77,15 +87,15 @@ export const TodoProvider = (props) => {
         }
     }
 
-    // Get stored Todos
+    // Récupération des données 
     useEffect(() => {
-        // clearStorage(),
         readData()
     }, [])
 
 
 
     return (
+        //On encapsule directement les enfants dans le contexte
         <TodoContext.Provider value={[todos, dispatch]}>
             {props.children}
         </TodoContext.Provider>

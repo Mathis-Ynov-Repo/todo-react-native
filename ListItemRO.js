@@ -1,18 +1,17 @@
 import React, { Component, useContext, useState } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, TextInput, Button } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { TodoContext } from './context/todos.context';
 
+//Tâche sans option de modification ou changement d'état
 const ListItemRO = ({ value }) => {
     const [display, setDisplay] = useState(false);
-    // Is it better that way or using props 🤔 ?
     const [todos, dispatch] = useContext(TodoContext);
-    // const  {dispatch} = useContext(TodoContext);
 
-    //destructuring value prop
+    //destructuration de la prop value
     let { state, description, text, dueDateString, category } = value;
 
-    //declare states with those values
+    //declaration du state basé sur cette prop
     const dueDate = new Date(dueDateString);
 
     let todoMonth = dueDate.getMonth();
@@ -20,9 +19,6 @@ const ListItemRO = ({ value }) => {
     let todoYear = dueDate.getFullYear()
     let displayedDate = todoDay + '/' + (todoMonth + 1) + '/' + todoYear;
     let displayedDescription = description ? description : "No description provided"
-    //old
-    // const descriptionView = <Text style={{ width: "100%" }}>{itemDescription}</Text>
-    // const noDescriptionMsg = <Text style={{ width: "100%" }}>No description provided</Text>
 
     getDateStyle = () => {
         let currDate = new Date();
@@ -64,16 +60,16 @@ const ListItemRO = ({ value }) => {
                     style={styles}
                     onPress={handleDisplay}
                 >
-                    <Text style={{ color: 'grey', margin: 5 }}>{display ? <Ionicons name="ios-arrow-dropdown-circle" size={18} color="orange" />
-                        : <Ionicons name="ios-arrow-dropup-circle" size={18} color="orange" />}</Text>
+                    {display ?
+                        <Ionicons name="ios-arrow-dropdown-circle" size={18} color="orange" style={{ margin: 5 }} />
+                        : <Ionicons name="ios-arrow-dropup-circle" size={18} color="orange" style={{ margin: 5 }} />}
                 </TouchableOpacity>
-                {display ? <Text style={{ width: "100%" }}>{displayedDescription}</Text> : null}
+                {display && <Text style={{ width: "100%" }}>{displayedDescription}</Text>}
             </View>
         </View >
     );
 };
 const styles = StyleSheet.create({
-
     container: {
         flex: 1,
         backgroundColor: '#efefef',
