@@ -35,7 +35,7 @@ const CreateTaskScreen = () => {
             //lance le dispatch du context pour ajouter la tâche
             dispatch({
                 type: "ADD_TODO",
-                payload: { text: text, state: false, description: description, dueDateString: date, category: category }
+                payload: { text: text, state: false, description: description, dueDateString: date, category: category, id: Date.now() }
             });
 
             //reset les états

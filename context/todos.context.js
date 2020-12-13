@@ -23,13 +23,12 @@ const reducer = (todos, action) => {
             return tmpDelTodos;
         //modification d'une tâche
         case "MOD_TODO":
-            let tmpModTodos = todos.map((todo, index) => index !== action.payload.index ? todo : action.payload.item);
+            let tmpModTodos = todos.map((todo) => todo.id !== action.payload.id ? todo : action.payload);
             return tmpModTodos
-        //modification du l'état (todo = false ou done = true) d'une tâche
-
+        //modification de l'état (todo = false ou done = true) d'une tâche
         case "MOD_TODO_STATE":
-            let tmpModeStateTodos = todos.map((value, i) => {
-                if (action.payload !== i) {
+            let tmpModeStateTodos = todos.map((value) => {
+                if (action.payload !== value.id) {
                     return value
                 } else {
 

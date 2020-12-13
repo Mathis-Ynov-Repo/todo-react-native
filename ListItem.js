@@ -5,7 +5,7 @@ import { TodoContext } from './context/todos.context';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 //Tâche avec option de modification ou changement d'état
-const ListItem = ({ value, index }) => {
+const ListItem = ({ value }) => {
     const [display, setDisplay] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
     const [isDatePickerVisibleItem, setDatePickerVisibilityItem] = useState(false);
@@ -14,7 +14,7 @@ const ListItem = ({ value, index }) => {
 
 
     //desctructuration de la prop value
-    let { state, description, text, dueDateString, category } = value;
+    let { state, description, text, dueDateString, category, id } = value;
 
     //declaration des states avec cets valeurs
     const [dueDate, setDueDate] = useState(new Date(dueDateString))
@@ -67,9 +67,9 @@ const ListItem = ({ value, index }) => {
 
     handleDisplay = () => setDisplay(!display)
 
-    const handleEdit = (item, index) => dispatch({
+    const handleEdit = (item) => dispatch({
         type: "MOD_TODO",
-        payload: { item, index }
+        payload: item
     })
 
     const handleDelete = () => dispatch({
@@ -77,13 +77,13 @@ const ListItem = ({ value, index }) => {
         payload: value
     })
 
-    const handleStateChange = (index) => dispatch({
+    const handleStateChange = (todoId) => dispatch({
         type: "MOD_TODO_STATE",
-        payload: index
+        payload: todoId
     })
 
-    const confirmEdit = (item, index) => {
-        handleEdit(item, index);
+    const confirmEdit = async (item) => {
+        await handleEdit(item);
         setIsEditing(false);
     }
 
@@ -91,7 +91,7 @@ const ListItem = ({ value, index }) => {
         <View>
             {!isEditing ? (
                 <TouchableOpacity delayLongPress={1000} onLongPress={() => setIsEditing(true)} style={[styles.item, { borderBottomColor: category.color, borderBottomWidth: 5, borderBottomEndRadius: 10 }, state == true ? styles.success : styles.todo]}
-                    onPress={() => handleStateChange(index)}
+                    onPress={() => handleStateChange(id)}
                 >
                     <Text style={{ fontSize: 18, flex: 0.7 }}>
                         {text}
@@ -152,7 +152,7 @@ const ListItem = ({ value, index }) => {
                         </TouchableOpacity>
                         <TouchableOpacity
                             //injection des props destructurées et modifiées dans un nouvel object
-                            onPress={() => confirmEdit({ state, description: itemDescription, text: itemText, dueDateString: dueDate, category: category }, index)}
+                            onPress={() => confirmEdit({ state, description: itemDescription, text: itemText, dueDateString: dueDate, category: category, id: id })}
                         >
                             <Ionicons name="md-checkmark" size={24} color="green" />
                         </TouchableOpacity>

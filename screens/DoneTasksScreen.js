@@ -3,21 +3,20 @@ import { SafeAreaView, Text, ScrollView } from "react-native";
 import { TodoContext } from "../context/todos.context";
 import ListItemRO from "../ListItemRO";
 import NavBar from "../Navbar";
-import NavBarWithCategories from "../NewNav"
+import NavBarWithCategories from "../NavbarWithCategories"
 
 const DoneTasksScreen = ({ navigation }) => {
     const [todos] = useContext(TodoContext);
+    //liste des tâches terminées
     const [list, setList] = useState([]);
+
+    //états de filtrage
     const [filteredList, setFilteredList] = useState([]);
-    const [isFiltering, setIsFiltering] = useState(false)
-    const [categoryFilter, setCategoryFilter] = useState(0)
+    const [isFiltering, setIsFiltering] = useState(false);
+    const [categoryFilter, setCategoryFilter] = useState(0);
 
 
 
-    //Affichage en forme de badge du nombre de taches réalisées
-    useEffect(() => {
-        navigation.setOptions({ tabBarBadge: list.length });
-    }, [todos]);
 
     const filterCategories = (categoryID) => {
         if (!isFiltering && categoryFilter !== categoryID) {
@@ -37,11 +36,19 @@ const DoneTasksScreen = ({ navigation }) => {
         }
     }
     useEffect(() => {
-        let tmp = todos.filter((v) => v.state === true)
+        //trie des tâches terminées
+        let tmp = todos.filter((v) => v.state === true);
+
+        //Affichage en forme de badge du nombre de taches réalisées
+        navigation.setOptions({ tabBarBadge: tmp.length });
         setList(tmp)
-        setCategoryFilter(0)
-        setIsFiltering(false)
-        setFilteredList(list)
+
+        isFiltering && setFilteredList(tmp.filter((v) => v.category.id === categoryFilter))
+
+        // filterCategories(categoryFilter)
+        // setCategoryFilter(0)
+        // setIsFiltering(false)
+        // setFilteredList(list)
 
     }, [todos])
 
@@ -49,12 +56,14 @@ const DoneTasksScreen = ({ navigation }) => {
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: '#efefef' }}>
             <NavBarWithCategories title="Done Tasks" currentCategory={categoryFilter} handleFilter={filterCategories} />
-
+            {/* Affichage de liste si il existe des tâches terminées */}
             {list.length > 0 ? (
                 <ScrollView>
+                    {/* Affichage de la liste si l'utilisateur ne filtre pas */}
                     {!isFiltering ? list.map((value, index) => {
                         return <ListItemRO value={value} key={index}></ListItemRO>
                     })
+                        //Affiachage soit d'un message vide si rien ne correspond au filtre soit des tâches lui correspondant
                         : filteredList.length > 0 ?
                             filteredList.map((value, index) => {
                                 return <ListItemRO value={value} key={index}></ListItemRO>
@@ -66,7 +75,7 @@ const DoneTasksScreen = ({ navigation }) => {
                 </ScrollView>
             ) : (
                     <ScrollView contentContainerStyle={{ alignItems: "center", justifyContent: "center", flexGrow: 1 }}>
-                        <Text style={{ fontSize: 24 }}>No items in the list yet !</Text>
+                        <Text style={{ fontSize: 24 }}>No done tasks in the list !</Text>
                     </ScrollView>
                 )}
         </SafeAreaView>
