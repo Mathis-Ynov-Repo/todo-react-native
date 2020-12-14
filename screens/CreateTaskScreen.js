@@ -72,15 +72,16 @@ const CreateTaskScreen = () => {
             {displayNotification && <Notification />}
             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
                 <TextInput
-                    style={styles.input}
-                    placeholder="Type your new task here!"
+                    style={{ ...styles.input, borderColor: category.color }}
+                    placeholder="Type your new task's title here!"
                     maxLength={40}
                     onChangeText={text => setText(text)}
                     ref={input => { textInput = input }}
                 />
                 <TextInput
-                    style={styles.input}
-                    placeholder="A little description maybe?"
+                    style={{ ...styles.input, fontSize: 20, height: 100, width: 300, borderColor: category.color }}
+                    multiline={true}
+                    placeholder="A small description maybe?"
                     maxLength={200}
                     onChangeText={description => setDescription(description)}
                     ref={input => { descriptionInput = input }}
@@ -163,7 +164,13 @@ const styles = StyleSheet.create({
     },
     input: {
         fontSize: 24,
-        textAlign: "center"
+        width: 350,
+        textAlign: "center",
+        borderWidth: 2,
+        padding: 10,
+        margin: 5,
+        backgroundColor: 'white',
+        borderRadius: 10
     },
 
     modalText: {

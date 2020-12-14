@@ -17,7 +17,7 @@ const DoneTasksScreen = ({ navigation }) => {
 
 
 
-
+    //filtrage selon la catégories
     const filterCategories = (categoryID) => {
         if (!isFiltering && categoryFilter !== categoryID) {
             let tmp = list.filter((v) => v.category.id === categoryID)
@@ -45,17 +45,12 @@ const DoneTasksScreen = ({ navigation }) => {
 
         isFiltering && setFilteredList(tmp.filter((v) => v.category.id === categoryFilter))
 
-        // filterCategories(categoryFilter)
-        // setCategoryFilter(0)
-        // setIsFiltering(false)
-        // setFilteredList(list)
-
     }, [todos])
 
     //filtrer seulement les tâches réalisées
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: '#efefef' }}>
-            <NavBarWithCategories title="Done Tasks" currentCategory={categoryFilter} handleFilter={filterCategories} />
+            <NavBarWithCategories title="Your done tasks" currentCategory={categoryFilter} handleFilter={filterCategories} />
             {/* Affichage de liste si il existe des tâches terminées */}
             {list.length > 0 ? (
                 <ScrollView>
@@ -63,7 +58,7 @@ const DoneTasksScreen = ({ navigation }) => {
                     {!isFiltering ? list.map((value, index) => {
                         return <ListItemRO value={value} key={index}></ListItemRO>
                     })
-                        //Affiachage soit d'un message vide si rien ne correspond au filtre soit des tâches lui correspondant
+                        //Affichage soit d'un message vide si rien ne correspond au filtre soit des tâches lui correspondant
                         : filteredList.length > 0 ?
                             filteredList.map((value, index) => {
                                 return <ListItemRO value={value} key={index}></ListItemRO>

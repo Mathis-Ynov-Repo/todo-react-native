@@ -2,7 +2,6 @@ import React, { Component, useContext, useEffect, useState } from "react"
 import { SafeAreaView, StatusBar, Text, ScrollView, TouchableOpacity, StyleSheet } from "react-native";
 import { TodoContext } from "../context/todos.context";
 import ListItem from "../ListItem";
-import NavBar from "../Navbar";
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 import NavBarWithCategories from "../NavbarWithCategories"
@@ -21,6 +20,7 @@ const MainScreen = ({ navigation }) => {
     const [categoryFilter, setCategoryFilter] = useState(0);
 
 
+    //filtrage selon la catégories
     const filterCategories = (categoryID) => {
         if (!isFiltering && categoryFilter !== categoryID) {
             let tmp = list.filter((v) => v.category.id === categoryID)
@@ -54,8 +54,7 @@ const MainScreen = ({ navigation }) => {
 
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: '#efefef' }}>
-            {/* <NavBar title="Your Tasks" /> */}
-            <NavBarWithCategories title="Your Tasks" currentCategory={categoryFilter} handleFilter={filterCategories} />
+            <NavBarWithCategories title="Your tasks to do" currentCategory={categoryFilter} handleFilter={filterCategories} />
             {list.length > 0 ? (
 
                 <ScrollView>

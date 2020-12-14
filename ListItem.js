@@ -96,7 +96,7 @@ const ListItem = ({ value }) => {
                     <Text style={{ fontSize: 18, flex: 0.7 }}>
                         {text}
                     </Text>
-                    <Text style={styles.date, { color: getDateStyle() }}>
+                    <Text style={{ color: getDateStyle() }}>
                         {displayedDate}
                     </Text>
 
@@ -129,7 +129,7 @@ const ListItem = ({ value }) => {
                             maxLength={40}
                             onChangeText={newtext => setItemText(newtext)}
                         />
-                        <Text style={styles.date, { color: getDateStyle() }}>
+                        <Text style={{ color: getDateStyle() }}>
                             {displayedDate}
                         </Text>
                         <TouchableOpacity
@@ -187,10 +187,6 @@ const styles = StyleSheet.create({
     },
     todo: {
         borderLeftColor: 'red',
-    },
-    date: {
-        fontSize: 14,
-        flex: 0.3
     }
 });
 export default ListItem
